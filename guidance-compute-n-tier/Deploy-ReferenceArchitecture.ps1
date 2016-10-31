@@ -5,7 +5,7 @@ param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
   [Parameter(Mandatory=$false)]
-  $Location = "East US 2"
+  $Location = "Central US"
 )
 
 $OSType = "Linux"
@@ -38,8 +38,7 @@ $networkSecurityGroupTemplate = New-Object System.Uri -ArgumentList @($templateR
 $availabilitySetTemplate = New-Object System.Uri -ArgumentList @($templateRootUri, 'templates/resources/Microsoft.Compute/virtualMachines/availabilitySet-new.json')
 
 # Template parameters for respective deployments
-$virtualNetworkNodesParametersFile = [System.IO.Path]::Combine($PSScriptRoot, 'parameters', $OSType.ToLower(), 'virtualNetworkNodes.parameters.json')
-$virtualNetworkMgmtParametersFile = [System.IO.Path]::Combine($PSScriptRoot, 'parameters', $OSType.ToLower(), 'virtualNetworkManagement.parameters.json')
+$virtualNetworkParametersFile = [System.IO.Path]::Combine($PSScriptRoot, 'parameters', $OSType.ToLower(), 'virtualNetwork.parameters.json')
 $businessTierParametersFile = [System.IO.Path]::Combine($PSScriptRoot, 'parameters', $OSType.ToLower(), 'businessTier.parameters.json')
 $dataTierParametersFile = [System.IO.Path]::Combine($PSScriptRoot, 'parameters', $OSType.ToLower(), 'dataTier.parameters.json')
 $webTierParametersFile = [System.IO.Path]::Combine($PSScriptRoot, 'parameters', $OSType.ToLower(), 'webTier.parameters.json')
@@ -56,13 +55,9 @@ Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 # Create the resource group
 $resourceGroup = New-AzureRmResourceGroup -Name $resourceGroupName -Location $Location
 
-Write-Host "Deploying virtual network for nodes..."
-New-AzureRmResourceGroupDeployment -Name "ra-ntier-nodes-vnet-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $virtualNetworkTemplate.AbsoluteUri -TemplateParameterFile $virtualNetworkNodesParametersFile
-
-Write-Host "Deploying virtual network for management..."
-New-AzureRmResourceGroupDeployment -Name "ra-ntier-mgmt-vnet-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $virtualNetworkTemplate.AbsoluteUri -TemplateParameterFile $virtualNetworkMgmtParametersFile    
+Write-Host "Deploying virtual network..."
+New-AzureRmResourceGroupDeployment -Name "ra-ntier-vnet-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -TemplateUri $virtualNetworkTemplate.AbsoluteUri -TemplateParameterFile $virtualNetworkParametersFile
 
 Write-Host "Deploying availability set for data tier..."
 New-AzureRmResourceGroupDeployment -Name "ra-ntier-data-avset-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `

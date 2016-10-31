@@ -20,6 +20,10 @@
           {
             "name": "data",
             "addressPrefix": "10.0.3.0/24"
+          },
+          {
+            "name": "mgmt",
+            "addressPrefix": "10.0.0.128/25"
           }
         ],
         "dnsServers": [ ]

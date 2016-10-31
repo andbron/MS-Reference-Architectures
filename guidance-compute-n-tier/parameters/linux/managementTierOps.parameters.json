@@ -20,7 +20,7 @@
             "privateIPAllocationMethod": "dynamic",
             "publicIPAllocationMethod": "dynamic",
             "enableIPForwarding": false,
-            "domainNameLabelPrefix": "rantieropscenter",
+            "domainNameLabelPrefix": "rantierops",
             "dnsServers": [ ]
           }
         ],
@@ -44,7 +44,7 @@
         "extensions": [
           {
             "name": "ra-ntier-install-opscenter-ext",
-            "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/kirpas/ra-ntier-db/guidance-compute-n-tier/extensions/linux/opscenter-mapper.json",
+            "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/guidance-compute-n-tier/extensions/linux/opscenter-mapper.json",
             "publisher": "Microsoft.OSTCExtensions",
             "type": "CustomScriptForLinux",
             "typeHandlerVersion": "1.5",
@@ -60,7 +60,7 @@
     },
     "virtualNetworkSettings": {
       "value": {
-        "name": "ra-ntier-mgmt-vnet",
+        "name": "ra-ntier-vnet",
         "resourceGroup": "ra-ntier-cassandra-rg"
       }
     },

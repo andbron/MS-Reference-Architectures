@@ -20,7 +20,7 @@
             "publicIPAllocationMethod": "dynamic",
             "privateIPAllocationMethod": "dynamic",
             "enableIPForwarding": false,
-            "domainNameLabelPrefix": "rantierdatavm",
+            "domainNameLabelPrefix": "rantierdatanode",
             "dnsServers": [ ]
           }
         ],
@@ -44,7 +44,7 @@
         "extensions": [
           {
             "name": "ra-ntier-install-cassandra-ext",
-            "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/kirpas/ra-ntier-db/guidance-compute-n-tier/extensions/linux/cassandra-mapper.json",
+            "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/guidance-compute-n-tier/extensions/linux/cassandra-mapper.json",
             "publisher": "Microsoft.OSTCExtensions",
             "type": "CustomScriptForLinux",
             "typeHandlerVersion": "1.5",
@@ -66,8 +66,8 @@
     },
     "buildingBlockSettings": {
       "value": {
-        "storageAccountsCount": 3,
-        "vmCount": 3,
+        "storageAccountsCount": 6,
+        "vmCount": 6,
         "vmStartIndex": 1
       }
     }

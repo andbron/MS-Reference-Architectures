@@ -50,7 +50,7 @@
     },
     "virtualNetworkSettings": {
       "value": {
-        "name": "ra-ntier-mgmt-vnet",
+        "name": "ra-ntier-vnet",
         "resourceGroup": "ra-ntier-cassandra-rg"
       }
     },

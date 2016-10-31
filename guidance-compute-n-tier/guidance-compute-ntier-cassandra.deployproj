@@ -42,8 +42,7 @@
     <None Include="parameters\linux\managementTierOps.parameters.json" />
     <None Include="parameters\linux\managementTierJumpbox.parameters.json" />
     <None Include="parameters\linux\networkSecurityGroups.parameters.json" />
-    <None Include="parameters\linux\virtualNetworkManagement.parameters.json" />
-    <None Include="parameters\linux\virtualNetworkNodes.parameters.json" />
+    <None Include="parameters\linux\virtualNetwork.parameters.json" />
     <None Include="parameters\linux\webTier.parameters.json" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />

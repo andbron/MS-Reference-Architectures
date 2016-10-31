@@ -34,7 +34,7 @@
               "name": "allow-mgmt-ssh",
               "direction": "Inbound",
               "priority": 110,
-              "sourceAddressPrefix": "10.1.0.128/25",
+              "sourceAddressPrefix": "10.0.0.128/25",
               "destinationAddressPrefix": "*",
               "sourcePortRange": "*",
               "destinationPortRange": "22",
@@ -91,7 +91,7 @@
               "name": "allow-mgmt-ssh",
               "direction": "Inbound",
               "priority": 120,
-              "sourceAddressPrefix": "10.1.0.128/25",
+              "sourceAddressPrefix": "10.0.0.128/25",
               "destinationAddressPrefix": "*",
               "sourcePortRange": "*",
               "destinationPortRange": "22",
@@ -107,60 +107,6 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Deny",
-              "priority": 130,
-              "direction": "Inbound"
-            }
-          ]
-        },
-        {
-          "name": "ra-ntier-data-nsg",
-          "subnets": [
-            "data"
-          ],
-          "networkInterfaces": [
-          ],
-          "securityRules": [
-            {
-              "name": "allow-mgmt-ssh",
-              "direction": "Inbound",
-              "priority": 100,
-              "sourceAddressPrefix": "10.1.0.128/25",
-              "destinationAddressPrefix": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "access": "Allow",
-              "protocol": "Tcp"
-            },            
-            {
-              "name": "allow-ops-center-http",
-              "protocol": "*",
-              "sourcePortRange": "*",
-              "destinationPortRange": "8888-65535",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 110,
-              "direction": "Inbound"
-            },
-            {
-              "name": "allow-native",
-              "protocol": "TCP",
-              "sourcePortRange": "*",
-              "destinationPortRange": "9042",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
-              "priority": 120,
-              "direction": "Inbound"
-            },
-            {
-              "name": "allow-jmx",
-              "protocol": "TCP",
-              "sourcePortRange": "*",
-              "destinationPortRange": "7199",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "*",
-              "access": "Allow",
               "priority": 130,
               "direction": "Inbound"
             }
@@ -209,7 +155,7 @@
               "name": "allow-mgmt-ssh",
               "direction": "Inbound",
               "priority": 100,
-              "sourceAddressPrefix": "10.1.0.128/25",
+              "sourceAddressPrefix": "10.0.0.128/25",
               "destinationAddressPrefix": "*",
               "sourcePortRange": "*",
               "destinationPortRange": "22",
@@ -240,7 +186,61 @@
               "direction": "Inbound"
             }
           ]
-        }
+        },
+        {
+          "name": "ra-ntier-data-nsg",
+          "subnets": [
+            "data"
+          ],
+          "networkInterfaces": [
+          ],
+          "securityRules": [
+            {
+              "name": "allow-mgmt-ssh",
+              "direction": "Inbound",
+              "priority": 100,
+              "sourceAddressPrefix": "10.0.0.128/25",
+              "destinationAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "access": "Allow",
+              "protocol": "Tcp"
+            },            
+            {
+              "name": "allow-ops-center-http",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8888-65535",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Inbound"
+            },
+            {
+              "name": "allow-native",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "9042",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Inbound"
+            },
+            {
+              "name": "allow-jmx",
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "7199",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 130,
+              "direction": "Inbound"
+            }
+          ]
+        }        
       ]
     }
   }

@@ -9,7 +9,7 @@
   "variables": {
     "scriptName": "install-opscenter.sh",
     "opsCenterInstallerUri": "[uri(deployment().properties.templateLink.uri, variables('scriptName'))]",
-    "seedNodeName": "rantierdatavm1",
+    "seedNodeName": "rantierdatanode1",
     "location": "[resourceGroup().location]",
     "instance": {
       "settings": {
