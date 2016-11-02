@@ -11,7 +11,7 @@
     },
     "parameterRootUri": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/guidance-compute-n-tier/parameters/",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/guidance-identity-aad/parameters/",
       "metadata": {
         "decription": "Root path for parameters"
       }
