@@ -56,38 +56,45 @@ if ($Mode -eq "onpremise") {
 	$onpremiseNetworkResourceGroupName = "ra-aad-onpremise-rg"
 
 	# Azure Onpremise Deployments
+	#1 ra-aad-onpremise-vnet-deployment
     $onpremiseNetworkResourceGroup = New-AzureRmResourceGroup -Name $onpremiseNetworkResourceGroupName -Location $Location
     Write-Host "Creating onpremise virtual network..."
     New-AzureRmResourceGroupDeployment -Name "ra-aad-onpremise-vnet-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName -TemplateUri $virtualNetworkTemplate.AbsoluteUri `
         -TemplateParameterFile $onpremiseVirtualNetworkParametersFile
 
+	#2 ra-aad-onpremise-adc-deployment
     Write-Host "Deploying AD Connect servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-aad-onpremise-adc-deployment" `
 		-ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $azureAdcVirtualMachinesParametersFile
 
+	#3 ad-onpremise-adds-deployment
     Write-Host "Deploying ADDS servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-aad-onpremise-adds-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $onpremiseADDSVirtualMachinesParametersFile
 
+	#4 ra-aad-onpremise-dns-vnet-deployment
     # Remove the Azure DNS entry since the forest will create a DNS forwarding entry.
     Write-Host "Updating virtual network DNS servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-aad-onpremise-dns-vnet-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName -TemplateUri $virtualNetworkTemplate.AbsoluteUri `
         -TemplateParameterFile $onpremiseVirtualNetworkDnsParametersFile
 
+	#5 ra-aad-onpremise-adds-forest-deployment
     Write-Host "Creating ADDS forest..."
     New-AzureRmResourceGroupDeployment -Name "ra-aad-onpremise-adds-forest-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $onpremiseCreateAddsForestExtensionParametersFile
 
+	#6 ra-aad-onpremise-adds-dc-deployment
     Write-Host "Creating ADDS domain controller..."
     New-AzureRmResourceGroupDeployment -Name "ra-aad-onpremise-adds-dc-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $onpremiseAddAddsDomainControllerExtensionParametersFile
 
+	#7 ra-aad-onpremise-adds-dc-deployment
     Write-Host "Join AD Connect servers to Domain......"
     New-AzureRmResourceGroupDeployment -Name "ra-aad-onpremise-adds-dc-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
@@ -112,26 +119,32 @@ elseif ($Mode -eq "ntier") {
 	# Create the resource group
 	$resourceGroup = New-AzureRmResourceGroup -Name $resourceGroupName -Location $Location
 
+	#1 -aad-ntier-vnet-deployment
 	Write-Host "Deploying virtual network..."
 	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-vnet-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
 		-TemplateUri $virtualNetworkTemplate.AbsoluteUri -TemplateParameterFile $virtualNetworkParametersFile
 
-	Write-Host "Deploying business tier..."
-	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-biz-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-		-TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $businessTierParametersFile
-
-	Write-Host "Deploying data tier..."
-	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-data-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-		-TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $dataTierParametersFile
-
+	#2 ra-aad-ntier-web-deployment
 	Write-Host "Deploying web tier..."
 	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-web-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
 		-TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $webTierParametersFile
 
+	#3 ra-aad-ntier-biz-deployment
+	Write-Host "Deploying business tier..."
+	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-biz-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
+		-TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $businessTierParametersFile
+
+	#4 ra-aad-ntier-data-deployment
+	Write-Host "Deploying data tier..."
+	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-data-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
+		-TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $dataTierParametersFile
+
+	#5 ra-aad-ntier-mgmt-deployment
 	Write-Host "Deploying management tier..."
 	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-mgmt-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
 		-TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementTierParametersFile
 
+	#6 ra-aad-ntier-nsg-deployment
 	Write-Host "Deploying network security group"
 	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-nsg-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
 		-TemplateUri $networkSecurityGroupTemplate.AbsoluteUri -TemplateParameterFile $networkSecurityGroupParametersFile
