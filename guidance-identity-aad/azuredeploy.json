@@ -29,7 +29,7 @@
     }
   },
   "variables": {
-    "templates": {
+    "ntier": {
       "deployment": {
         "loadBalancer": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/loadBalancer-backend-n-vm/azuredeploy.json')]",
         "virtualNetwork": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/vnet-n-subnet/azuredeploy.json')]",
@@ -54,10 +54,10 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.virtualNetwork]"
+          "uri": "[variables('ntier').deployment.virtualNetwork]"
         },
         "parametersLink": {
-          "uri": "[variables('templates').parameter.virtualNetwork]",
+          "uri": "[variables('ntier').parameter.virtualNetwork]",
           "contentVersion": "1.0.0.0"
         }
       }
@@ -72,10 +72,10 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.loadBalancer]"
+          "uri": "[variables('ntier').deployment.loadBalancer]"
         },
         "parametersLink": {
-          "uri": "[variables('templates').parameter.webTier]",
+          "uri": "[variables('ntier').parameter.webTier]",
           "contentVersion": "1.0.0.0"
         }
       }
@@ -90,10 +90,10 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.loadBalancer]"
+          "uri": "[variables('ntier').deployment.loadBalancer]"
         },
         "parametersLink": {
-          "uri": "[variables('templates').parameter.businessTier]",
+          "uri": "[variables('ntier').parameter.businessTier]",
           "contentVersion": "1.0.0.0"
         }
       }
@@ -108,10 +108,10 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.virtualMachine]"
+          "uri": "[variables('ntier').deployment.virtualMachine]"
         },
         "parametersLink": {
-          "uri": "[variables('templates').parameter.dataTier]",
+          "uri": "[variables('ntier').parameter.dataTier]",
           "contentVersion": "1.0.0.0"
         }
       }
@@ -126,10 +126,10 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.virtualMachine]"
+          "uri": "[variables('ntier').deployment.virtualMachine]"
         },
         "parametersLink": {
-          "uri": "[variables('templates').parameter.managementTier]",
+          "uri": "[variables('ntier').parameter.managementTier]",
           "contentVersion": "1.0.0.0"
         }
       }
@@ -148,10 +148,10 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.networkSecurityGroup]"
+          "uri": "[variables('ntier').deployment.networkSecurityGroup]"
         },
         "parametersLink": {
-          "uri": "[variables('templates').parameter.networkSecurityGroup]",
+          "uri": "[variables('ntier').parameter.networkSecurityGroup]",
           "contentVersion": "1.0.0.0"
         }
       }
