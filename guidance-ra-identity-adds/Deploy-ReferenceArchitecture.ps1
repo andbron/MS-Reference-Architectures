@@ -7,7 +7,7 @@ param(
   [Parameter(Mandatory=$true)]
   $Location,
   [Parameter(Mandatory=$true)]
-  [ValidateSet("Onpremise", "Infrastructure", "CreateVpn", "AzureADDS", "Workload")]
+  [ValidateSet("All", "Onpremise", "Infrastructure", "CreateVpn", "AzureADDS", "Workload")]
   $Mode
 )
 
@@ -75,7 +75,7 @@ $addsResourceGroupName = "ra-adds-adds-rg"
 # Login to Azure and select your subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
-if ($Mode -eq "Onpremise") {
+if ($Mode -eq "Onpremise" -Or $Mode -eq "All") {
     $onpremiseNetworkResourceGroup = New-AzureRmResourceGroup -Name $onpremiseNetworkResourceGroupName -Location $Location
     Write-Host "Creating onpremise virtual network..."
     New-AzureRmResourceGroupDeployment -Name "ra-adds-onpremise-vnet-deployment" `
@@ -103,7 +103,7 @@ if ($Mode -eq "Onpremise") {
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $onpremiseAddAddsDomainControllerExtensionParametersFile
 }
-elseif ($Mode -eq "Infrastructure") {
+if ($Mode -eq "Infrastructure" -Or $Mode -eq "All") {
     Write-Host "Creating ADDS resource group..."
     $azureNetworkResourceGroup = New-AzureRmResourceGroup -Name $azureNetworkResourceGroupName -Location $Location
 
@@ -120,7 +120,7 @@ elseif ($Mode -eq "Infrastructure") {
     New-AzureRmResourceGroupDeployment -Name "ra-adds-jumpbox-deployment" -ResourceGroupName $securityResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementParametersFile
 }
-elseif ($Mode -eq "CreateVpn") {
+if ($Mode -eq "CreateVpn" -Or $Mode -eq "All") {
     $onpremiseNetworkResourceGroup = Get-AzureRmResourceGroup -Name $onpremiseNetworkResourceGroupName
     $azureNetworkResourceGroup = Get-AzureRmResourceGroup -Name $azureNetworkResourceGroupName
 
@@ -138,7 +138,7 @@ elseif ($Mode -eq "CreateVpn") {
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
         -TemplateFile $onPremiseConnectionTemplateFile -TemplateParameterFile $onpremiseConnectionParametersFile
 }
-elseif ($Mode -eq "AzureADDS") {
+if ($Mode -eq "AzureADDS" -Or $Mode -eq "All") {
     # Add the replication site.
     $onpremiseNetworkResourceGroup = Get-AzureRmResourceGroup -Name $onpremiseNetworkResourceGroupName
     Write-Host "Creating ADDS replication site..."
@@ -167,7 +167,7 @@ elseif ($Mode -eq "AzureADDS") {
         -ResourceGroupName $addsResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $azureAddAddsDomainControllerExtensionParametersFile
 }
-elseif ($Mode -eq "Workload") {
+if ($Mode -eq "Workload" -Or $Mode -eq "All") {
     # Deploy DMZs
     $azureNetworkResourceGroup = Get-AzureRmResourceGroup -Name $azureNetworkResourceGroupName
 
