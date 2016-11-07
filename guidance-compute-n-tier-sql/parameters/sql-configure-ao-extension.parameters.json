@@ -15,7 +15,7 @@
               "autoUpgradeMinorVersion": false,
               "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/master/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
               "settingsConfig": {
-                "modulesURL": "https://aotemplates.blob.core.windows.net/ratemplates/CreateFailoverCluster.ps1.zip",
+                "modulesURL": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/guidance-compute-n-tier-sql/extensions/CreateFailoverCluster.ps1.zip",
                 "configurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
                 "properties": {
                   "domainName": "contoso.com",
