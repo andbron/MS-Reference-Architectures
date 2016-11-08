@@ -34,10 +34,12 @@
     <None Include="extensions\adds-replication-site.ps1" />
     <None Include="extensions\adds.ps1" />
     <None Include="extensions\adfs-farm-first.ps1" />
+    <None Include="extensions\domain-join1.ps1" />
     <None Include="extensions\adfsproxy-farm-first.ps1" />
     <None Include="extensions\adfsproxy-farm-rest.ps1" />
     <None Include="extensions\adfs-farm-rest.ps1" />
     <None Include="extensions\gmsa.ps1" />
+    <None Include="parameters\azure\adds-domain-join1.parameters.json" />
     <None Include="parameters\azure\adds-domain-join.parameters.json" />
     <None Include="parameters\azure\adfsproxy-farm-rest.parameters.json" />
     <None Include="parameters\azure\adfsproxy-farm-first.parameters.json" />
@@ -67,6 +69,7 @@
     <None Include="parameters\onpremise\virtualNetworkGateway.parameters.json" />
     <None Include="templates\onpremise\ad-forest-extension-settings-mapper.json" />
     <None Include="templates\onpremise\ad-replication-site-extension-settings-mapper.json" />
+    <None Include="templates\onpremise\adds-domain-join1-settings-mapper.json" />
     <None Include="templates\onpremise\adfsproxy-farm-first-extension-settings-mapper.json" />
     <None Include="templates\onpremise\adfsproxy-farm-rest-extension-settings-mapper.json" />
     <None Include="templates\onpremise\adfs-farm-rest-extension-settings-mapper.json" />
