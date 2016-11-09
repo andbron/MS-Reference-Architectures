@@ -66,6 +66,16 @@
         ],
         "loadBalancingRules": [
           {
+            "name": "http-rule",
+            "frontendPort": 80,
+            "backendPort": 80,
+            "protocol": "Tcp",
+            "backendPoolName": "ra-adds-web-lb-bep",
+            "frontendIPConfigurationName": "ra-adds-web-lb-fe",
+            "probeName": "http-probe",
+            "enableFloatingIP": false
+          },
+          {
             "name": "https-rule",
             "frontendPort": 443,
             "backendPort": 443,
@@ -78,10 +88,16 @@
         ],
         "probes": [
           {
+            "name": "http-probe",
+            "port": 80,
+            "protocol": "Http",
+            "requestPath": "/"
+          },
+          {
             "name": "https-probe",
             "port": 443,
             "protocol": "Http",
-            "requestPath": "/"
+            "requestPath": null
           }
         ],
         "inboundNatRules": [ ]
