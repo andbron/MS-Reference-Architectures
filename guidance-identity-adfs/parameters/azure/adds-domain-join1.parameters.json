@@ -8,7 +8,7 @@
           "vms": [ "ra-adfs-ad-vm1", "ra-adfs-ad-vm2" ],
           "extensions": [
             {
-              "name": "join-ad-domain",
+              "name": "install-adds",
               "publisher": "Microsoft.Compute",
               "type": "CustomScriptExtension",
               "typeHandlerVersion": "1.8",
