@@ -33,6 +33,7 @@
     <None Include="extensions\adds-forest.ps1" />
     <None Include="extensions\adds-replication-site.ps1" />
     <None Include="extensions\adds.ps1" />
+    <None Include="extensions\iisaspnet.ps1.zip" />
     <None Include="parameters\azure\add-adds-domain-controller.parameters.json" />
     <None Include="parameters\azure\dmz-private.parameters.json" />
     <None Include="parameters\azure\dmz-public.parameters.json" />
