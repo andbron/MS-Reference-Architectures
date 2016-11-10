@@ -90,7 +90,7 @@
 
         ],
         "availabilitySet": {
-          "useExistingAvailabilitySet": "No",
+          "useExistingAvailabilitySet": "Yes",
           "name": "sql-as"
         }
       }
