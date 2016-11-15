@@ -174,10 +174,11 @@ if ($Mode -eq "CreateVpn" -Or $Mode -eq "Prepare") {
 if ($Mode -eq "AzureADDS" -Or $Mode -eq "Prepare") {
     # Add the replication site.
     $onpremiseNetworkResourceGroup = Get-AzureRmResourceGroup -Name $onpremiseNetworkResourceGroupName
+
     Write-Host "Creating ADDS replication site..."
-    New-AzureRmResourceGroupDeployment -Name "ra-adfs-site-replication-deployment" `
-        -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $onpremiseReplicationSiteForestExtensionParametersFile
+#    New-AzureRmResourceGroupDeployment -Name "ra-adfs-site-replication-deployment" `
+#        -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
+#        -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri -TemplateParameterFile $onpremiseReplicationSiteForestExtensionParametersFile
 
     # Deploy AD tier
     Write-Host "Creating ADDS resource group..."
