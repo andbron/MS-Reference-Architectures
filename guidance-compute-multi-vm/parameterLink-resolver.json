@@ -1,0 +1,51 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "loadBalancerSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Settings for infrastructure"
+      }
+    },
+    "virtualMachinesSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Settings for virtual machines"
+      }
+    },
+    "virtualNetworkSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Settings for virtual network"
+      }
+    },
+    "buildingBlockSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Settings for building block"
+      }
+    }
+  },
+  "variables": { },
+  "resources": [
+  ],
+  "outputs": {
+    "loadBalancerSettings": {
+      "type": "object",
+      "value": "[parameters('loadBalancerSettings')]"
+    },
+    "virtualMachinesSettings": {
+      "type": "object",
+      "value": "[parameters('virtualMachinesSettings')]"
+    },
+    "virtualNetworkSettings": {
+      "type": "object",
+      "value": "[parameters('virtualNetworkSettings')]"
+    },
+    "buildingBlockSettings": {
+      "type": "object",
+      "value": "[parameters('buildingBlockSettings')]"
+    }
+  }
+}

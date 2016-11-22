@@ -1,16 +1,26 @@
 #
 # Deploy_ReferenceArchitecture.ps1
 #
+[cmdletbinding(DefaultParameterSetName='DEV-PASSWORD')]
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
-  [Parameter(Mandatory=$false)]
-  $ResourceGroupName = "ra-single-vm-rg",
+  [Parameter(Mandatory=$true)]
+  $ResourceGroupName,
   [Parameter(Mandatory=$false)]
   $Location = "Central US",
   [Parameter(Mandatory=$false)]
   [ValidateSet("Windows", "Linux")]
-  $OSType = "Linux"
+  $OSType = "Linux",
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Security.SecureString]$AdminPassword,
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SshPublicKey,
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $KeyVaultName,
+  [Parameter(Mandatory=$false, ParameterSetName="PROD")]
+  [ValidateSet("adminPassword", "sshPublicKey")]
+  $KeyVaultSecretName = "adminPassword"
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,6 +49,16 @@ $networkSecurityGroupParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "
 # Login to Azure and select your subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
+# Build protectedSettings hash table
+$protectedSettings = @{"adminPassword" = $null; "sshPublicKey" = $null}
+
+switch ($PSCmdlet.ParameterSetName) {
+  "DEV-PASSWORD" { $protectedSettings["adminPassword"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminPassword))}
+  "DEV-SSH" { $protectedSettings["sshPublicKey"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SshPublicKey))}
+  "PROD" { $protectedSettings[$KeyVaultSecretName] = (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecretName).SecretValueText}
+  default { throw "Invalid parameters specified." }
+}
+
 # Create the resource group
 $resourceGroup = New-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location
 
@@ -48,7 +68,7 @@ New-AzureRmResourceGroupDeployment -Name "ra-single-vm-vnet-deployment" -Resourc
 
 Write-Host "Deploying virtual machine..."
 New-AzureRmResourceGroupDeployment -Name "ra-single-vm-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $virtualMachineParametersFile
+    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $virtualMachineParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying network security groups..."
 New-AzureRmResourceGroupDeployment -Name "ra-single-vm-nsg-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `

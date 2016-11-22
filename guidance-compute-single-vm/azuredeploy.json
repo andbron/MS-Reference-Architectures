@@ -26,6 +26,14 @@
       "metadata": {
         "description": "Relative path decider for the template parameters."
       }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "defaultValue": null
+    },
+    "sshPublicKey": {
+      "type": "securestring",
+      "defaultValue": null
     }
   },
   "variables": {
@@ -40,7 +48,9 @@
         "virtualMachine": "[uri(parameters('parameterRootUri'), concat(parameters('osType'), '/virtualMachine.parameters.json'))]",
         "networkSecurityGroup": "[uri(parameters('parameterRootUri'), concat(parameters('osType'), '/networkSecurityGroups.parameters.json'))]"
       }
-    }
+    },
+    "parametersTemplate": "[concat(parameters('parameterRootUri'), '../parameterLink-resolver.json')]",
+    "vmParametersDeploymentName": "vm-params-Deployment"
   },
   "resources": [
     {
@@ -60,6 +70,20 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
+      "name": "[variables('vmParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.virtualMachine]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
       "name": "ra-single-vm-deployment",
       "dependsOn": [
         "ra-single-vm-vnet-deployment"
@@ -67,10 +91,25 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.virtualMachine]"
+          "uri": "[variables('templates').deployment.virtualMachine]",
+          "[variables('vmParametersDeploymentName')]"
         },
-        "parametersLink": {
-          "uri": "[variables('templates').parameter.virtualMachine]"
+        "parameters": {
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('vmParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('vmParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('vmParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
         }
       }
     },

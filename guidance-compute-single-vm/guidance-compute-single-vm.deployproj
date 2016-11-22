@@ -31,6 +31,7 @@
     <None Include="Deployment.targets">
       <Visible>False</Visible>
     </None>
+    <None Include="parameterLink-resolver.json" />
     <None Include="parameters\linux\networkSecurityGroups.parameters.json" />
     <None Include="parameters\linux\virtualMachine.parameters.json" />
     <None Include="parameters\linux\virtualNetwork.parameters.json" />
