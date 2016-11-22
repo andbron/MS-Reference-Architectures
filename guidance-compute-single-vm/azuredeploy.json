@@ -92,8 +92,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.virtualMachine]",
-          "[variables('vmParametersDeploymentName')]"
+          "uri": "[variables('templates').deployment.virtualMachine]"
         },
         "parameters": {
           "virtualMachinesSettings": {
