@@ -5,8 +5,8 @@
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
-  [Parameter(Mandatory=$true)]
-  $ResourceGroupName,
+  [Parameter(Mandatory=$false)]
+  $ResourceGroupName = "ra-single-vm-rg",
   [Parameter(Mandatory=$false)]
   $Location = "Central US",
   [Parameter(Mandatory=$false)]
