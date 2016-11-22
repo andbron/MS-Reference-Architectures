@@ -2,6 +2,7 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+<<<<<<< HEAD
     "loadBalancerSettings": {
       "type": "object",
       "defaultValue": {},
@@ -12,19 +13,27 @@
     "virtualMachinesSettings": {
       "type": "object",
       "defaultValue": {},
+=======
+    "virtualMachinesSettings": {
+      "type": "object",
+>>>>>>> updated the single and multi vmm RAs to support keyvault
       "metadata": {
         "description": "Settings for virtual machines"
       }
     },
     "virtualNetworkSettings": {
       "type": "object",
+<<<<<<< HEAD
       "defaultValue": {},
+=======
+>>>>>>> updated the single and multi vmm RAs to support keyvault
       "metadata": {
         "description": "Settings for virtual network"
       }
     },
     "buildingBlockSettings": {
       "type": "object",
+<<<<<<< HEAD
       "defaultValue": {},
       "metadata": {
         "description": "Settings for building block"
@@ -54,6 +63,16 @@
       "type": "object",
       "value": "[parameters('loadBalancerSettings')]"
     },
+=======
+      "metadata": {
+        "description": "Settings for building block"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [],
+  "outputs": {
+>>>>>>> updated the single and multi vmm RAs to support keyvault
     "virtualMachinesSettings": {
       "type": "object",
       "value": "[parameters('virtualMachinesSettings')]"
@@ -65,6 +84,7 @@
     "buildingBlockSettings": {
       "type": "object",
       "value": "[parameters('buildingBlockSettings')]"
+<<<<<<< HEAD
     },
     "dmzSettings": {
       "type": "object",
@@ -77,6 +97,8 @@
     "connectionSettings": {
       "type": "object",
       "value": "[parameters('connectionSettings')]"
+=======
+>>>>>>> updated the single and multi vmm RAs to support keyvault
     }
   }
 }
