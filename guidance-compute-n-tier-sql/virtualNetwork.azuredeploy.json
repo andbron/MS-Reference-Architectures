@@ -15,6 +15,14 @@
       "metadata": {
         "decription": "Root path for parameters"
       }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "defaultValue": null
+    },
+    "sshPublicKey": {
+      "type": "securestring",
+      "defaultValue": null
     }
   },
   "variables": {
@@ -37,7 +45,12 @@
         "sqlConfigureAOExtensions": "[concat(parameters('parameterRootUri'), 'sql-configure-ao-extension.parameters.json')]",
         "managementTier": "[concat(parameters('parameterRootUri'), 'virtualMachines-mgmt.parameters.json')]"
       }
-    }
+    },
+    "parametersTemplate": "[concat(parameters('parameterRootUri'), '../parameterLink-resolver.json')]",
+    "mgmtParametersDeploymentName": "mgmt-params-Deployment",
+    "adParametersDeploymentName": "ad-params-Deployment",
+    "sqlParametersDeploymentName": "sql-params-Deployment",
+    "sqlFswParametersDeploymentName": "sqlFsw-params-Deployment"
   },
   "resources": [
     {
@@ -58,18 +71,60 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
+      "name": "[variables('mgmtParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.managementTier]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
       "name": "ra-ntier-sql-mgmt-deployment",
       "dependsOn": [
-        "ra-ntier-sql-vnet-deployment"
+        "ra-ntier-sql-vnet-deployment",
+        "[variables('mgmtParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.virtualMachine]"
         },
+        "parameters": {
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('adParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
         "parametersLink": {
-          "uri": "[variables('templates').parameter.managementTier]",
-          "contentVersion": "1.0.0.0"
+          "uri": "[variables('templates').parameter.ad]"
         }
       }
     },
@@ -78,16 +133,30 @@
       "apiVersion": "2015-01-01",
       "name": "ra-ntier-sql-ad-deployment",
       "dependsOn": [
-        "ra-ntier-sql-vnet-deployment"
+        "ra-ntier-sql-vnet-deployment",
+        "[variables('adParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.virtualMachine]"
         },
-        "parametersLink": {
-          "uri": "[variables('templates').parameter.ad]",
-          "contentVersion": "1.0.0.0"
+        "parameters": {
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('adParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('adParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('adParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
         }
       }
     },
@@ -148,18 +217,63 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
+      "name": "[variables('sqlParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.sqlServers]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
       "name": "ra-ntier-sql-servers",
       "dependsOn": [
-        "ra-ntier-sql-secondary-ad-ext"
+        "ra-ntier-sql-secondary-ad-ext",
+        "[variables('sqlParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.loadBalancer]"
         },
+        "parameters": {
+          "loadBalancerSettings": {
+            "value": "[reference(variables('sqlParametersDeploymentName')).outputs.loadBalancerSettings.value]"
+          },
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('sqlParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('sqlParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('sqlParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('sqlFswParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
         "parametersLink": {
-          "uri": "[variables('templates').parameter.sqlServers]",
-          "contentVersion": "1.0.0.0"
+          "uri": "[variables('templates').parameter.sqlFsw]"
         }
       }
     },
@@ -168,16 +282,30 @@
       "apiVersion": "2015-01-01",
       "name": "ra-ntier-sql-fsw",
       "dependsOn": [
-        "ra-ntier-sql-secondary-ad-ext"
+        "ra-ntier-sql-secondary-ad-ext",
+        "[variables('sqlFswParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.virtualMachine]"
         },
-        "parametersLink": {
-          "uri": "[variables('templates').parameter.sqlFsw]",
-          "contentVersion": "1.0.0.0"
+        "parameters": {
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('sqlFswParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('sqlFswParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('sqlFswParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
         }
       }
     },

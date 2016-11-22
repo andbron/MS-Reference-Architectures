@@ -1,6 +1,7 @@
 #
 # Deploy_ReferenceArchitecture.ps1
 #
+[cmdletbinding(DefaultParameterSetName='DEV-PASSWORD')]
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
@@ -8,7 +9,16 @@ param(
   $Location,
   [Parameter(Mandatory=$true)]
   [ValidateSet("Infrastructure", "Security", "Workload")]
-  $Mode
+  $Mode,
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Security.SecureString]$AdminPassword,
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SshPublicKey,
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $KeyVaultName,
+  [Parameter(Mandatory=$false, ParameterSetName="PROD")]
+  [ValidateSet("adminPassword", "sshPublicKey")]
+  $KeyVaultSecretName = "adminPassword"
 )
 
 $ErrorActionPreference = "Stop"
@@ -59,6 +69,16 @@ $workloadResourceGroupName = "ra-ntier-sql-workload-rg"
 # Login to Azure and select your subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
+# Build protectedSettings hash table
+$protectedSettings = @{"adminPassword" = $null; "sshPublicKey" = $null}
+
+switch ($PSCmdlet.ParameterSetName) {
+  "DEV-PASSWORD" { $protectedSettings["adminPassword"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminPassword))}
+  "DEV-SSH" { $protectedSettings["sshPublicKey"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SshPublicKey))}
+  "PROD" { $protectedSettings[$KeyVaultSecretName] = (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecretName).SecretValueText}
+  default { throw "Invalid parameters specified." }
+}
+
 if ($Mode -eq "Infrastructure") {
     $infrastructureResourceGroup = New-AzureRmResourceGroup -Name $infrastructureResourceGroupName -Location $Location
     Write-Host "Creating virtual network..."
@@ -68,12 +88,12 @@ if ($Mode -eq "Infrastructure") {
 
 	Write-Host "Deploying jumpbox..."
 	New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-mgmt-deployment" -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
-    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementParametersFile
+    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Deploying ADDS servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-ad-deployment" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $domainControllersParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $domainControllersParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Updating virtual network DNS servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-update-dns" `
@@ -93,12 +113,12 @@ if ($Mode -eq "Infrastructure") {
     Write-Host "Deploy SQL servers with load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-servers" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterFile $sqlParametersFile
+        -TemplateParameterFile $sqlParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Deploy FWS..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-fsw" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $fswParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $fswParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Prepare SQL Always ON..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-ao-iaas-ext" `
@@ -117,12 +137,12 @@ elseif ($Mode -eq "Workload") {
     Write-Host "Deploy Service A servers with load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-biz-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterFile $bizLoadBalancerParametersFile
+        -TemplateParameterFile $bizLoadBalancerParametersFile -protectedSettings $protectedSettings
 
 	Write-Host "Deploy Service B servers with load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-ntier-sql-web-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterFile $webLoadBalancerParametersFile
+        -TemplateParameterFile $webLoadBalancerParametersFile -protectedSettings $protectedSettings
 }
 elseif ($Mode -eq "Security") {
     # Deploy DMZs

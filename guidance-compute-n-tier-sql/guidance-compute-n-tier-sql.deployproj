@@ -35,6 +35,7 @@
     <None Include="extensions\CreateFileShareWitness.ps1.zip" />
     <None Include="extensions\iisaspnet.ps1.zip" />
     <None Include="extensions\PrepareAlwaysOnSqlServer.ps1.zip" />
+    <None Include="parameterLink-resolver.json" />
     <None Include="parameters\adds\ad.parameters.json" />
     <None Include="parameters\adds\add-adds-domain-controller.parameters.json" />
     <None Include="parameters\adds\create-adds-forest-extension.parameters.json" />

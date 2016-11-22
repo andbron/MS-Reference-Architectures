@@ -86,13 +86,13 @@
       "apiVersion": "2015-01-01",
       "name": "ra-single-vm-deployment",
       "dependsOn": [
-        "ra-single-vm-vnet-deployment"
+        "ra-single-vm-vnet-deployment",
+        "[variables('vmParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.virtualMachine]",
-          "[variables('vmParametersDeploymentName')]"
+          "uri": "[variables('templates').deployment.virtualMachine]"
         },
         "parameters": {
           "virtualMachinesSettings": {
