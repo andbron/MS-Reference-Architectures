@@ -15,6 +15,14 @@
       "metadata": {
         "decription": "Root path for parameters"
       }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "defaultValue": null
+    },
+    "sshPublicKey": {
+      "type": "securestring",
+      "defaultValue": null
     }
   },
   "variables": {
@@ -30,17 +38,21 @@
         "internetDmz": "[concat(parameters('parameterRootUri'), 'internet-dmz.parameters.json')]",
         "networkSecurityGroups": "[concat(parameters('parameterRootUri'), 'networkSecurityGroups.parameters.json')]"
       }
-    }
+    },
+    "parametersTemplate": "[concat(parameters('parameterRootUri'), '../parameterLink-resolver.json')]",
+    "mgmtParametersDeploymentName": "mgmt-params-Deployment",
+    "dmzParametersDeploymentName": "dmz-params-Deployment",
+    "internetDmzParametersDeploymentName": "internetDmz-params-Deployment"
   },
   "resources": [
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-mgmt-vms-deployment",
+      "name": "[variables('mgmtParametersDeploymentName')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.multiVMs]"
+          "uri": "[variables('parametersTemplate')]"
         },
         "parametersLink": {
           "uri": "[variables('templates').parameter.mgmtSubnetVMs]"
@@ -50,11 +62,42 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-dmz-deployment",
+      "name": "ra-mgmt-vms-deployment",
+      "dependsOn": [
+        "[variables('mgmtParametersDeploymentName')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.dmz]"
+          "uri": "[variables('templates').deployment.multiVMs]"
+        },
+        "parameters": {
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('dmzParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
         },
         "parametersLink": {
           "uri": "[variables('templates').parameter.dmz]"
@@ -64,14 +107,70 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-internet-dmz-deployment",
+      "name": "ra-dmz-deployment",
+      "dependsOn": [
+        "[variables('dmzParametersDeploymentName')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.dmz]"
         },
+        "parameters": {
+          "dmzSettings": {
+            "value": "[reference(variables('dmzParametersDeploymentName')).outputs.dmzSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('dmzParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('internetDmzParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
         "parametersLink": {
           "uri": "[variables('templates').parameter.internetDmz]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-internet-dmz-deployment",
+      "dependsOn": [
+        "[variables('internetDmzParametersDeploymentName')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.dmz]"
+        },
+        "parameters": {
+          "dmzSettings": {
+            "value": "[reference(variables('internetDmzParametersDeploymentName')).outputs.dmzSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('internetDmzParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
         }
       }
     },
