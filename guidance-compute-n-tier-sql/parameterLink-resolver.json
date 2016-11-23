@@ -29,6 +29,21 @@
       "metadata": {
         "description": "Settings for building block"
       }
+    },
+    "dmzSettings": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Settings for DMZ"
+      }
+    },
+    "virtualNetworkGatewaySettings": {
+      "type": "object",
+      "defaultValue": {}
+    },
+    "connectionSettings": {
+      "type": "object",
+      "defaultValue": {}
     }
   },
   "variables": { },
@@ -50,6 +65,18 @@
     "buildingBlockSettings": {
       "type": "object",
       "value": "[parameters('buildingBlockSettings')]"
+    },
+    "dmzSettings": {
+      "type": "object",
+      "value": "[parameters('dmzSettings')]"
+    },
+    "virtualNetworkGatewaySettings": {
+      "type": "object",
+      "value": "[parameters('virtualNetworkGatewaySettings')]"
+    },
+    "connectionSettings": {
+      "type": "object",
+      "value": "[parameters('connectionSettings')]"
     }
   }
 }

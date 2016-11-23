@@ -16,6 +16,7 @@
     <None Include="Deploy-ReferenceArchitecture.ps1" />
     <None Include="extensions\linux\install-apache.sh" />
     <None Include="extensions\windows\iisaspnet.ps1.zip" />
+    <None Include="parameterLink-resolver.json" />
     <None Include="parameters\dmz.parameters.json" />
     <None Include="parameters\networkSecurityGroups.parameters.json" />
     <None Include="parameters\virtualMachines-mgmt-subnet.parameters.json" />
