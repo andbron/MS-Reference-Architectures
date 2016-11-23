@@ -48,10 +48,8 @@
         "computerNamePrefix": "web",
         "size": "Standard_DS1",
         "adminUsername": "testuser",
-        "adminPassword": "AweS0me@PW",
         "osType": "linux",
         "osAuthenticationType": "password",
-        "sshPublicKey": "",
         "nics": [
           {
             "isPublic": "false",
