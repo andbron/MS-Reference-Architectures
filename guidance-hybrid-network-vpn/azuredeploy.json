@@ -15,6 +15,9 @@
       "metadata": {
         "decription": "Root path for parameters"
       }
+    },
+    "sharedKey": {
+      "type": "securestring"
     }
   },
   "variables": {
@@ -27,7 +30,9 @@
         "virtualNetwork": "[uri(parameters('parameterRootUri'), 'virtualNetwork.parameters.json')]",
         "virtualNetworkGateway": "[uri(parameters('parameterRootUri'), 'virtualNetworkGateway.parameters.json')]"
       }
-    }
+    },
+    "parametersTemplate": "[concat(parameters('parameterRootUri'), '../parameterLink-resolver.json')]",
+    "vpnParametersDeploymentName": "vpn-params-Deployment"
   },
   "resources": [
     {
@@ -47,17 +52,45 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
+      "name": "[variables('vpnParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.virtualNetworkGateway]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
       "name": "ra-hybrid-vpn-deployment",
       "dependsOn": [
-        "ra-hybrid-vnet-deployment"
+        "ra-hybrid-vnet-deployment",
+        "[variables('vpnParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.virtualNetworkGateway]"
         },
-        "parametersLink": {
-          "uri": "[variables('templates').parameter.virtualNetworkGateway]"
+        "parameters": {
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('vpnParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "virtualNetworkGatewaySettings": {
+            "value": "[reference(variables('vpnParametersDeploymentName')).outputs.virtualNetworkGatewaySettings.value]"
+          },
+          "connectionSettings": {
+            "value": "[reference(variables('vpnParametersDeploymentName')).outputs.connectionSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "sharedKey": "[parameters('sharedKey')]"
+            }
+          }
         }
       }
     }
