@@ -15,6 +15,17 @@
       "metadata": {
         "decription": "Root path for parameters"
       }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "defaultValue": null
+    },
+    "sshPublicKey": {
+      "type": "securestring",
+      "defaultValue": null
+    },
+    "sharedKey": {
+      "type": "securestring"
     }
   },
   "variables": {
@@ -37,7 +48,14 @@
         "vpn": "[concat(parameters('parameterRootUri'), 'vpn.parameters.json')]",
         "networkSecurityGroups": "[concat(parameters('parameterRootUri'), 'networkSecurityGroups.parameters.json')]"
       }
-    }
+    },
+    "parametersTemplate": "[concat(parameters('parameterRootUri'), '../parameterLink-resolver.json')]",
+    "webParametersDeploymentName": "web-params-Deployment",
+    "bizParametersDeploymentName": "biz-params-Deployment",
+    "dataParametersDeploymentName": "data-params-Deployment",
+    "mgmtParametersDeploymentName": "mgmt-params-Deployment",
+    "dmzParametersDeploymentName": "dmz-params-Deployment",
+    "vpnParametersDeploymentName": "vpn-params-Deployment"
   },
   "resources": [
     {
@@ -57,14 +75,11 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-web-lb-vms-deployment",
-      "dependsOn": [
-        "ra-vnet-deployment"
-      ],
+      "name": "[variables('webParametersDeploymentName')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.loadBalancer]"
+          "uri": "[variables('parametersTemplate')]"
         },
         "parametersLink": {
           "uri": "[variables('templates').parameter.webSubnetLoadBalancerAndVMs]"
@@ -74,14 +89,46 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-biz-lb-vms-deployment",
+      "name": "ra-web-lb-vms-deployment",
       "dependsOn": [
-        "ra-vnet-deployment"
+        "ra-vnet-deployment",
+        "[variables('webParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.loadBalancer]"
+        },
+        "parameters": {
+          "loadBalancerSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.loadBalancerSettings.value]"
+          },
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('bizParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
         },
         "parametersLink": {
           "uri": "[variables('templates').parameter.bizSubnetLoadBalancerAndVMs]"
@@ -91,14 +138,46 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-data-lb-vms-deployment",
+      "name": "ra-biz-lb-vms-deployment",
       "dependsOn": [
-        "ra-vnet-deployment"
+        "ra-vnet-deployment",
+        "[variables('bizParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.loadBalancer]"
+        },
+        "parameters": {
+          "loadBalancerSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.loadBalancerSettings.value]"
+          },
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('dataParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
         },
         "parametersLink": {
           "uri": "[variables('templates').parameter.dataSubnetLoadBalancerAndVMs]"
@@ -108,14 +187,46 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-mgmt-vms-deployment",
+      "name": "ra-data-lb-vms-deployment",
       "dependsOn": [
-        "ra-vnet-deployment"
+        "ra-vnet-deployment",
+        "[variables('dataParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.multiVMs]"
+          "uri": "[variables('templates').deployment.loadBalancer]"
+        },
+        "parameters": {
+          "loadBalancerSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.loadBalancerSettings.value]"
+          },
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('mgmtParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
         },
         "parametersLink": {
           "uri": "[variables('templates').parameter.mgmtSubnetVMs]"
@@ -125,14 +236,43 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-dmz-deployment",
+      "name": "ra-mgmt-vms-deployment",
       "dependsOn": [
-        "ra-vnet-deployment"
+        "ra-vnet-deployment",
+        "[variables('mgmtParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.dmz]"
+          "uri": "[variables('templates').deployment.multiVMs]"
+        },
+        "parameters": {
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('dmzParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
         },
         "parametersLink": {
           "uri": "[variables('templates').parameter.dmz]"
@@ -142,17 +282,74 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
+      "name": "ra-dmz-deployment",
+      "dependsOn": [
+        "ra-vnet-deployment",
+        "[variables('dmzParametersDeploymentName')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.dmz]"
+        },
+        "parameters": {
+          "dmzSettings": {
+            "value": "[reference(variables('dmzParametersDeploymentName')).outputs.dmzSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('dmzParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('vpnParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.vpn]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
       "name": "ra-vpn-deployment",
       "dependsOn": [
-        "ra-vnet-deployment"
+        "ra-vnet-deployment",
+        "[variables('vpnParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.vpn]"
         },
-        "parametersLink": {
-          "uri": "[variables('templates').parameter.vpn]"
+        "parameters": {
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('vpnParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "virtualNetworkGatewaySettings": {
+            "value": "[reference(variables('vpnParametersDeploymentName')).outputs.virtualNetworkGatewaySettings.value]"
+          },
+          "connectionSettings": {
+            "value": "[reference(variables('vpnParametersDeploymentName')).outputs.connectionSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "sharedKey": "[parameters('sharedKey')]"
+            }
+          }
         }
       }
     },
