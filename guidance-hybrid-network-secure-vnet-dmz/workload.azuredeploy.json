@@ -15,6 +15,14 @@
       "metadata": {
         "decription": "Root path for parameters"
       }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "defaultValue": null
+    },
+    "sshPublicKey": {
+      "type": "securestring",
+      "defaultValue": null
     }
   },
   "variables": {
@@ -27,17 +35,22 @@
         "bizSubnetLoadBalancerAndVMs": "[concat(parameters('parameterRootUri'), 'loadBalancer-biz-subnet.parameters.json')]",
         "dataSubnetLoadBalancerAndVMs": "[concat(parameters('parameterRootUri'), 'loadBalancer-data-subnet.parameters.json')]"
       }
-    }
+    },
+    "parametersTemplate": "[concat(parameters('parameterRootUri'), '../parameterLink-resolver.json')]",
+    "webParametersDeploymentName": "web-params-Deployment",
+    "bizParametersDeploymentName": "biz-params-Deployment",
+    "dataParametersDeploymentName": "data-params-Deployment"
+
   },
   "resources": [
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-web-lb-vms-deployment",
+      "name": "[variables('webParametersDeploymentName')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('templates').deployment.loadBalancer]"
+          "uri": "[variables('parametersTemplate')]"
         },
         "parametersLink": {
           "uri": "[variables('templates').parameter.webSubnetLoadBalancerAndVMs]"
@@ -47,11 +60,45 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-biz-lb-vms-deployment",
+      "name": "ra-web-lb-vms-deployment",
+      "dependsOn": [
+        "[variables('webParametersDeploymentName')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.loadBalancer]"
+        },
+        "parameters": {
+          "loadBalancerSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.loadBalancerSettings.value]"
+          },
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('bizParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
         },
         "parametersLink": {
           "uri": "[variables('templates').parameter.bizSubnetLoadBalancerAndVMs]"
@@ -61,14 +108,82 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-data-lb-vms-deployment",
+      "name": "ra-biz-lb-vms-deployment",
+      "dependsOn": [
+        "[variables('bizParametersDeploymentName')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('templates').deployment.loadBalancer]"
         },
+        "parameters": {
+          "loadBalancerSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.loadBalancerSettings.value]"
+          },
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('dataParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
         "parametersLink": {
           "uri": "[variables('templates').parameter.dataSubnetLoadBalancerAndVMs]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-data-lb-vms-deployment",
+      "dependsOn": [
+        "[variables('dataParametersDeploymentName')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.loadBalancer]"
+        },
+        "parameters": {
+          "loadBalancerSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.loadBalancerSettings.value]"
+          },
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
         }
       }
     }
