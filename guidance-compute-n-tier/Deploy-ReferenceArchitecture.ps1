@@ -1,11 +1,21 @@
 #
 # Deploy_ReferenceArchitecture.ps1
 #
+[cmdletbinding(DefaultParameterSetName='DEV-PASSWORD')]
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
   [Parameter(Mandatory=$false)]
-  $Location = "Central US"
+  $Location = "Central US",
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Security.SecureString]$AdminPassword,
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SshPublicKey,
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $KeyVaultName,
+  [Parameter(Mandatory=$false, ParameterSetName="PROD")]
+  [ValidateSet("adminPassword", "sshPublicKey")]
+  $KeyVaultSecretName = "adminPassword"
 )
 
 $OSType = "Linux"
@@ -52,6 +62,16 @@ $resourceGroupName = "ra-ntier-cassandra-rg"
 # Login to Azure and select your subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
+# Build protectedSettings hash table
+$protectedSettings = @{"adminPassword" = $null; "sshPublicKey" = $null}
+
+switch ($PSCmdlet.ParameterSetName) {
+  "DEV-PASSWORD" { $protectedSettings["adminPassword"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminPassword))}
+  "DEV-SSH" { $protectedSettings["sshPublicKey"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SshPublicKey))}
+  "PROD" { $protectedSettings[$KeyVaultSecretName] = (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecretName).SecretValueText}
+  default { throw "Invalid parameters specified." }
+}
+
 # Create the resource group
 $resourceGroup = New-AzureRmResourceGroup -Name $resourceGroupName -Location $Location
 
@@ -65,23 +85,23 @@ New-AzureRmResourceGroupDeployment -Name "ra-ntier-data-avset-deployment" -Resou
 
 Write-Host "Deploying business tier..."
 New-AzureRmResourceGroupDeployment -Name "ra-ntier-biz-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $businessTierParametersFile
+    -TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $businessTierParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying data tier..."
 New-AzureRmResourceGroupDeployment -Name "ra-ntier-data-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $dataTierParametersFile
+    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $dataTierParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying web tier..."
 New-AzureRmResourceGroupDeployment -Name "ra-ntier-web-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $webTierParametersFile
+    -TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $webTierParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying jumpbox in management tier..."
 New-AzureRmResourceGroupDeployment -Name "ra-ntier-mgmt-jb-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementTierJumpboxParametersFile
+    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementTierJumpboxParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying operations center in management tier..."
 New-AzureRmResourceGroupDeployment -Name "ra-ntier-mgmt-ops-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementTierOpsParametersFile
+    -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementTierOpsParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying network security group"
 New-AzureRmResourceGroupDeployment -Name "ra-ntier-nsg-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
