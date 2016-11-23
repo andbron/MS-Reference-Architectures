@@ -5,7 +5,9 @@ param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
   [Parameter(Mandatory=$false)]
-  $Location = "Central US"
+  $Location = "Central US",
+  [Parameter(Mandatory=$true)]
+  [Security.SecureString]$SharedKey
 )
 $ErrorActionPreference = "Stop"
 
@@ -24,7 +26,6 @@ Write-Host
 
 $templateRootUri = New-Object System.Uri -ArgumentList @($templateRootUriString)
 
-
 $virtualNetworkTemplateUri = New-Object System.Uri -ArgumentList @($templateRootUri, "templates/buildingBlocks/vnet-n-subnet/azuredeploy.json")
 $virtualNetworkParametersPath = [System.IO.Path]::Combine($PSScriptRoot, "parameters\virtualNetwork.parameters.json")
 
@@ -36,6 +37,9 @@ $resourceGroupName = "ra-hybrid-vpn-rg"
 # Login to Azure and select the subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
+$protectedSettings = @{}
+$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
+
 # Create the resource group
 $resourceGroup = New-AzureRmResourceGroup -Name $resourceGroupName -Location $Location
 
@@ -45,4 +49,4 @@ New-AzureRmResourceGroupDeployment -Name "ra-hybrid-vpn-vnet-deployment" -Resour
 
 Write-Host "Deploying virtual network gateway..."
 New-AzureRmResourceGroupDeployment -Name "ra-hybrid-vpn-gateway-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $virtualNetworkGatewayTemplateUri.AbsoluteUri -TemplateParameterFile $virtualNetworkGatewayParametersPath
+    -TemplateUri $virtualNetworkGatewayTemplateUri.AbsoluteUri -TemplateParameterFile $virtualNetworkGatewayParametersPath -protectedSettings $protectedSettings
