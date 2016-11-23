@@ -1,11 +1,23 @@
 ﻿#
 # Deploy_ReferenceArchitecture.ps1
 #
+[cmdletbinding(DefaultParameterSetName='DEV-PASSWORD')]
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
   [Parameter(Mandatory=$false)]
-  $Location = "West US 2"
+  $Location = "West US 2",
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Security.SecureString]$AdminPassword,
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SshPublicKey,
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $KeyVaultName,
+  [Parameter(Mandatory=$false, ParameterSetName="PROD")]
+  [ValidateSet("adminPassword", "sshPublicKey")]
+  $KeyVaultSecretName = "adminPassword",
+  [Parameter(Mandatory=$true)]
+  [Security.SecureString]$SharedKey
 )
 
 $ErrorActionPreference = "Stop"
@@ -47,6 +59,15 @@ $workloadResourceGroupName = "ra-public-dmz-wl-rg"
 # Login to Azure and select your subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
+$protectedSettings = @{"adminPassword" = $null; "sshPublicKey" = $null}
+$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
+switch ($PSCmdlet.ParameterSetName) {
+  "DEV-PASSWORD" { $protectedSettings["adminPassword"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminPassword))}
+  "DEV-SSH" { $protectedSettings["sshPublicKey"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SshPublicKey))}
+  "PROD" { $protectedSettings[$KeyVaultSecretName] = (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecretName).SecretValueText}
+  default { throw "Invalid parameters specified." }
+}
+
 # Create the resource group
 $networkResourceGroup = New-AzureRmResourceGroup -Name $networkResourceGroupName -Location $Location
 $workloadResourceGroup = New-AzureRmResourceGroup -Name $workloadResourceGroupName -Location $Location
@@ -57,31 +78,31 @@ New-AzureRmResourceGroupDeployment -Name "ra-vnet-deployment" -ResourceGroupName
 
 Write-Host "Deploying load balancer and virtual machines in web subnet..."
 New-AzureRmResourceGroupDeployment -Name "ra-web-lb-vms-deployment" -ResourceGroupName $workloadResourceGroup.ResourceGroupName `
-    -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $webSubnetLoadBalancerAndVMsParametersFile
+    -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $webSubnetLoadBalancerAndVMsParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying load balancer and virtual machines in biz subnet..."
 New-AzureRmResourceGroupDeployment -Name "ra-biz-lb-vms-deployment" -ResourceGroupName $workloadResourceGroup.ResourceGroupName `
-    -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $bizSubnetLoadBalancerAndVMsParametersFile
+    -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $bizSubnetLoadBalancerAndVMsParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying load balancer and virtual machines in data subnet..."
 New-AzureRmResourceGroupDeployment -Name "ra-data-lb-vms-deployment" -ResourceGroupName $workloadResourceGroup.ResourceGroupName `
-    -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $dataSubnetLoadBalancerAndVMsParametersFile
+    -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $dataSubnetLoadBalancerAndVMsParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying jumpbox in mgmt subnet..."
 New-AzureRmResourceGroupDeployment -Name "ra-mgmt-vms-deployment" -ResourceGroupName $networkResourceGroup.ResourceGroupName `
-    -TemplateUri $multiVMsTemplate.AbsoluteUri -TemplateParameterFile $mgmtSubnetVMsParametersFile
+    -TemplateUri $multiVMsTemplate.AbsoluteUri -TemplateParameterFile $mgmtSubnetVMsParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying private dmz..."
 New-AzureRmResourceGroupDeployment -Name "ra-private-dmz-deployment" -ResourceGroupName $networkResourceGroup.ResourceGroupName `
-    -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $dmzParametersFile
+    -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $dmzParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying public dmz..."
 New-AzureRmResourceGroupDeployment -Name "ra-public-dmz-deployment" -ResourceGroupName $networkResourceGroup.ResourceGroupName `
-    -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $internetDmzParametersFile
+    -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $internetDmzParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying vpn..."
 New-AzureRmResourceGroupDeployment -Name "ra-vpn-deployment" -ResourceGroupName $networkResourceGroup.ResourceGroupName `
-    -TemplateUri $vpnTemplate.AbsoluteUri -TemplateParameterFile $vpnParametersFile
+    -TemplateUri $vpnTemplate.AbsoluteUri -TemplateParameterFile $vpnParametersFile -protectedSettings $protectedSettings
 
 Write-Host "Deploying nsgs..."
 New-AzureRmResourceGroupDeployment -Name "ra-nsg-deployment" -ResourceGroupName $networkResourceGroup.ResourceGroupName `
