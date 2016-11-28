@@ -1,6 +1,7 @@
 ﻿#
 # Deploy_ReferenceArchitecture.ps1
 #
+[cmdletbinding(DefaultParameterSetName='DEV')]
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
@@ -8,7 +9,13 @@ param(
   $Location = "Central US",
   [Parameter(Mandatory=$true)]
   [ValidateSet("Circuit", "Network")]
-  $Mode
+  $Mode,
+  [Parameter(Mandatory=$true, ParameterSetName="DEV")]
+  [Security.SecureString]$SharedKey,
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $KeyVaultName,
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $SharedKeySecretName
 )
 
 $ErrorActionPreference = "Stop"
@@ -20,6 +27,10 @@ if ($templateRootUriString -eq $null) {
 
 if (![System.Uri]::IsWellFormedUriString($templateRootUriString, [System.UriKind]::Absolute)) {
   throw "Invalid value for TEMPLATE_ROOT_URI: $env:TEMPLATE_ROOT_URI"
+}
+
+if (($Mode -ieq "Network") -and ([string]::IsNullOrEmpty($SharedKey))){
+  throw "Invalid value for 'SharedKey'. The parameter SharedKey cannot be null or empty in 'Network' mode"
 }
 
 Write-Host
@@ -44,6 +55,13 @@ $resourceGroupName = "ra-hybrid-vpn-er-rg"
 # Login to Azure and select your subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
+$protectedSettings = @{}
+switch ($PSCmdlet.ParameterSetName) {
+  "DEV" { $protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))}
+  "PROD" { $protectedSettings.Add("sharedKey", (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SharedKeySecretName).SecretValueText)}
+  default { throw "Invalid parameters specified." }
+}
+
 $resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName -Location $Location -ErrorAction SilentlyContinue
 if ($resourceGroup -eq $null) {
   # Create the resource group
@@ -66,5 +84,5 @@ elseif ($Mode -eq "Network") {
 
   Write-Host "Deploying virtual network gateway..."
   New-AzureRmResourceGroupDeployment -Name "ra-hybrid-vpn-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-    -TemplateUri $virtualNetworkGatewayTemplate.AbsoluteUri -TemplateParameterFile $virtualNetworkGatewayParametersFile
+    -TemplateUri $virtualNetworkGatewayTemplate.AbsoluteUri -TemplateParameterFile $virtualNetworkGatewayParametersFile  -protectedSettings $protectedSettings
 }
