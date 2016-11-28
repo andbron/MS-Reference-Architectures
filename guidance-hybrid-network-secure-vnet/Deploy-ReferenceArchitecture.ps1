@@ -16,8 +16,13 @@ param(
   [Parameter(Mandatory=$false, ParameterSetName="PROD")]
   [ValidateSet("adminPassword", "sshPublicKey")]
   $KeyVaultSecretName = "adminPassword",
-  [Parameter(Mandatory=$true)]
-  [Security.SecureString]$SharedKey
+
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SharedKey,
+
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $SharedKeySecretName
 )
 
 $ErrorActionPreference = "Stop"
@@ -58,11 +63,19 @@ $resourceGroupName = "ra-private-dmz-rg"
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
 $protectedSettings = @{"adminPassword" = $null; "sshPublicKey" = $null}
-$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
 switch ($PSCmdlet.ParameterSetName) {
-  "DEV-PASSWORD" { $protectedSettings["adminPassword"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminPassword))}
-  "DEV-SSH" { $protectedSettings["sshPublicKey"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SshPublicKey))}
-  "PROD" { $protectedSettings[$KeyVaultSecretName] = (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecretName).SecretValueText}
+  "DEV-PASSWORD" { 
+	$protectedSettings["adminPassword"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminPassword))
+	$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
+  }
+  "DEV-SSH" { 
+	$protectedSettings["sshPublicKey"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SshPublicKey))
+	$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
+  }
+  "PROD" { 
+	$protectedSettings[$KeyVaultSecretName] = (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecretName).SecretValueText
+	$protectedSettings.Add("sharedKey", (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SharedKeySecretName).SecretValueText)
+  }
   default { throw "Invalid parameters specified." }
 }
 

@@ -1,13 +1,18 @@
 #
 # Deploy_ReferenceArchitecture.ps1
 #
+[cmdletbinding(DefaultParameterSetName='DEV')]
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
   [Parameter(Mandatory=$false)]
   $Location = "Central US",
-  [Parameter(Mandatory=$true)]
-  [Security.SecureString]$SharedKey
+  [Parameter(Mandatory=$true, ParameterSetName="DEV")]
+  [Security.SecureString]$SharedKey,
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $KeyVaultName,
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $SharedKeySecretName
 )
 $ErrorActionPreference = "Stop"
 
@@ -38,7 +43,11 @@ $resourceGroupName = "ra-hybrid-vpn-rg"
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
 $protectedSettings = @{}
-$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
+switch ($PSCmdlet.ParameterSetName) {
+  "DEV" { $protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))}
+  "PROD" { $protectedSettings.Add("sharedKey", (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SharedKeySecretName).SecretValueText)}
+  default { throw "Invalid parameters specified." }
+}
 
 # Create the resource group
 $resourceGroup = New-AzureRmResourceGroup -Name $resourceGroupName -Location $Location
