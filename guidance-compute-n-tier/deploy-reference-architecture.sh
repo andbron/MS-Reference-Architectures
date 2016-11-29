@@ -149,22 +149,42 @@ azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $AVAI
 echo "Deploying web tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $WEB_TIER_DEPLOYMENT_NAME \
 --template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters-file $WEB_TIER_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID || exit 1
+--subscription $SUBSCRIPTION_ID 
+
+if [ "$?" != "0" ]; then 
+	echo "ERROR: Deploying web tier..." 1>&2
+	exit 1
+fi
 
 echo "Deploying business tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $BIZ_TIER_DEPLOYMENT_NAME \
 --template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters-file $BIZ_TIER_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID || exit 1
+--subscription $SUBSCRIPTION_ID
+
+if [ "$?" != "0" ]; then 
+	echo "ERROR: Deploying business tier..." 1>&2
+	exit 1
+fi
 
 echo "Deploying data tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $DATA_TIER_DEPLOYMENT_NAME \
 --template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters-file $DATA_TIER_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID || exit 1
+--subscription $SUBSCRIPTION_ID
+
+if [ "$?" != "0" ]; then 
+	echo "ERROR: Deploying data tier..." 1>&2
+	exit 1
+fi
 
 echo "Deploying jumpbox in management tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $MGMT_TIER_JUMPBOX_DEPLOYMENT_NAME \
 --template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters-file $MGMT_TIER_JUMPBOX_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID || exit 1
+--subscription $SUBSCRIPTION_ID
+
+if [ "$?" != "0" ]; then 
+	echo "ERROR: Deploying jumpbox ..." 1>&2
+	exit 1
+fi
 
 echo "Deploying operations center in management tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $MGMT_TIER_OPS_DEPLOYMENT_NAME \
