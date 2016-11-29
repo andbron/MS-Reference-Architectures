@@ -26,6 +26,14 @@
       "metadata": {
         "description": "Relative path decider for the template parameters."
       }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "defaultValue": null
+    },
+    "sshPublicKey": {
+      "type": "securestring",
+      "defaultValue": null
     }
   },
   "variables": {
@@ -33,15 +41,11 @@
       "deployment": {
         "virtualNetwork": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/vnet-n-subnet/azuredeploy.json')]",
         "virtualMachine": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/multi-vm-n-nic-m-storage/azuredeploy.json')]",
-
-
         "networkSecurityGroup": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/networkSecurityGroups/azuredeploy.json')]"
       },
       "parameter": {
         "virtualNetwork": "[concat(parameters('parameterRootUri'), 'onpremise', '/virtualNetwork.parameters.json')]",
         "virtualMachine": "[concat(parameters('parameterRootUri'), 'onpremise', '/virtualMachines-adc.parameters.json')]",
-
-
         "networkSecurityGroup": "[concat(parameters('parameterRootUri'), parameters('osType'), '/networkSecurityGroups.parameters.json')]",
         "webTier": "[concat(parameters('parameterRootUri'), parameters('osType'), '/webTier.parameters.json')]",
         "dataTier": "[concat(parameters('parameterRootUri'), parameters('osType'), '/dataTier.parameters.json')]",
@@ -64,7 +68,13 @@
         "businessTier": "[concat(parameters('parameterRootUri'), parameters('osType'), '/businessTier.parameters.json')]",
         "managementTier": "[concat(parameters('parameterRootUri'), parameters('osType'), '/managementTier.parameters.json')]"
       }
-    }
+    },
+    "parametersTemplate": "[concat(parameters('parameterRootUri'), '../parameterLink-resolver.json')]",
+    "adcParametersDeploymentName": "adc-params-Deployment",
+    "webParametersDeploymentName": "web-params-Deployment",
+    "bizParametersDeploymentName": "biz-params-Deployment",
+    "dataParametersDeploymentName": "data-params-Deployment",
+    "mgmtParametersDeploymentName": "mgmt-params-Deployment"
   },
   "resources": [
     {
@@ -85,23 +95,48 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
+      "name": "[variables('adcParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
+        "parametersLink": {
+          "uri": "[variables('onpremise').parameter.virtualMachine]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
       "name": "ra-aad-onpremise-adc-deployment",
+      "dependsOn": [
+        "[variables('adcParametersDeploymentName')]"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('onpremise').deployment.virtualMachine]"
         },
-        "parametersLink": {
-          "uri": "[variables('onpremise').parameter.virtualMachine]",
-          "contentVersion": "1.0.0.0"
+        "parameters": {
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('adcParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('adcParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('adcParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
         }
       }
     },
-
-
-
-
-
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
@@ -120,18 +155,63 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
+      "name": "[variables('webParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
+        "parametersLink": {
+          "uri": "[variables('ntier').parameter.webTier]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
       "name": "ra-aad-ntier-web-deployment",
       "dependsOn": [
-        "Microsoft.Resources/deployments/ra-aad-ntier-vnet-deployment"
+        "Microsoft.Resources/deployments/ra-aad-ntier-vnet-deployment",
+        "[variables('webParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('ntier').deployment.loadBalancer]"
         },
+        "parameters": {
+          "loadBalancerSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.loadBalancerSettings.value]"
+          },
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('webParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('bizParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
         "parametersLink": {
-          "uri": "[variables('ntier').parameter.webTier]",
-          "contentVersion": "1.0.0.0"
+          "uri": "[variables('ntier').parameter.businessTier]"
         }
       }
     },
@@ -140,16 +220,47 @@
       "apiVersion": "2015-01-01",
       "name": "ra-aad-ntier-biz-deployment",
       "dependsOn": [
-        "Microsoft.Resources/deployments/ra-aad-ntier-vnet-deployment"
+        "Microsoft.Resources/deployments/ra-aad-ntier-vnet-deployment",
+        "[variables('bizParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('ntier').deployment.loadBalancer]"
         },
+        "parameters": {
+          "loadBalancerSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.loadBalancerSettings.value]"
+          },
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('bizParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('dataParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
         "parametersLink": {
-          "uri": "[variables('ntier').parameter.businessTier]",
-          "contentVersion": "1.0.0.0"
+          "uri": "[variables('ntier').parameter.dataTier]"
         }
       }
     },
@@ -158,16 +269,44 @@
       "apiVersion": "2015-01-01",
       "name": "ra-aad-ntier-data-deployment",
       "dependsOn": [
-        "Microsoft.Resources/deployments/ra-aad-ntier-vnet-deployment"
+        "Microsoft.Resources/deployments/ra-aad-ntier-vnet-deployment",
+        "[variables('dataParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('ntier').deployment.virtualMachine]"
         },
+        "parameters": {
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('dataParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[variables('mgmtParametersDeploymentName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('parametersTemplate')]"
+        },
         "parametersLink": {
-          "uri": "[variables('ntier').parameter.dataTier]",
-          "contentVersion": "1.0.0.0"
+          "uri": "[variables('ntier').parameter.managementTier]"
         }
       }
     },
@@ -176,16 +315,30 @@
       "apiVersion": "2015-01-01",
       "name": "ra-aad-ntier-mgmt-deployment",
       "dependsOn": [
-        "Microsoft.Resources/deployments/ra-aad-ntier-vnet-deployment"
+        "Microsoft.Resources/deployments/ra-aad-ntier-vnet-deployment",
+        "[variables('mgmtParametersDeploymentName')]"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('ntier').deployment.virtualMachine]"
         },
-        "parametersLink": {
-          "uri": "[variables('ntier').parameter.managementTier]",
-          "contentVersion": "1.0.0.0"
+        "parameters": {
+          "virtualMachinesSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.virtualMachinesSettings.value]"
+          },
+          "virtualNetworkSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.virtualNetworkSettings.value]"
+          },
+          "buildingBlockSettings": {
+            "value": "[reference(variables('mgmtParametersDeploymentName')).outputs.buildingBlockSettings.value]"
+          },
+          "protectedSettings": {
+            "value": {
+              "adminPassword": "[parameters('adminPassword')]",
+              "sshPublicKey": "[parameters('sshPublicKey')]"
+            }
+          }
         }
       }
     },
