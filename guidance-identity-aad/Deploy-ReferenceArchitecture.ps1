@@ -1,6 +1,7 @@
 #
 # Deploy_ReferenceArchitecture.ps1
 #
+[cmdletbinding(DefaultParameterSetName='DEV-PASSWORD')]
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
@@ -14,7 +15,18 @@ param(
 
   [Parameter(Mandatory=$true)]
   [ValidateSet("onpremise", "ntier")]
-  $Mode
+  $Mode,
+
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Security.SecureString]$AdminPassword,
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SshPublicKey,
+
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $KeyVaultName,
+  [Parameter(Mandatory=$false, ParameterSetName="PROD")]
+  [ValidateSet("adminPassword", "sshPublicKey")]
+  $KeyVaultSecretName = "adminPassword"
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,6 +52,13 @@ $networkSecurityGroupTemplate = New-Object System.Uri -ArgumentList @($templateR
 # Login to Azure and select your subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
+switch ($PSCmdlet.ParameterSetName) {
+  "DEV-PASSWORD" { $protectedSettings["adminPassword"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminPassword))}
+  "DEV-SSH" { $protectedSettings["sshPublicKey"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SshPublicKey))}
+  "PROD" { $protectedSettings[$KeyVaultSecretName] = (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecretName).SecretValueText}
+  default { throw "Invalid parameters specified." }
+}
+
 if ($Mode -eq "onpremise") {
 	# Azure Onpremise Parameter Files
 	$onpremiseVirtualNetworkParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\onpremise\virtualNetwork.parameters.json")
@@ -48,11 +67,7 @@ if ($Mode -eq "onpremise") {
 	$onpremiseCreateAddsForestExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\onpremise\create-adds-forest-extension.parameters.json")
 	$onpremiseAddAddsDomainControllerExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\onpremise\add-adds-domain-controller.parameters.json")
 	$onpremisJoinDomainExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\onpremise\virtualMachines-adc-joindomain.parameters.json")
-
 	$azureAdcVirtualMachinesParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\onpremise\virtualMachines-adc.parameters.json")
-
-
-
 	$onpremiseNetworkResourceGroupName = "ra-aad-onpremise-rg"
 
 	# Azure Onpremise Deployments
@@ -67,13 +82,13 @@ if ($Mode -eq "onpremise") {
     Write-Host "Deploying AD Connect servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-aad-onpremise-adc-deployment" `
 		-ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $azureAdcVirtualMachinesParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $azureAdcVirtualMachinesParametersFile -protectedSettings $protectedSettings
 
 	#3 ad-onpremise-adds-deployment
     Write-Host "Deploying ADDS servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-aad-onpremise-adds-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $onpremiseADDSVirtualMachinesParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $onpremiseADDSVirtualMachinesParametersFile -protectedSettings $protectedSettings
 
 	#4 ra-aad-onpremise-dns-vnet-deployment
     # Remove the Azure DNS entry since the forest will create a DNS forwarding entry.
@@ -112,10 +127,6 @@ elseif ($Mode -eq "ntier") {
 	$managementTierParametersFile = [System.IO.Path]::Combine($PSScriptRoot, 'parameters', $OSType.ToLower(), 'managementTier.parameters.json')
 	$networkSecurityGroupParametersFile = [System.IO.Path]::Combine($PSScriptRoot, 'parameters', $OSType.ToLower(), 'networkSecurityGroups.parameters.json')
 
-
-	# Login to Azure and select your subscription
-	Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
-
 	# Create the resource group
 	$resourceGroup = New-AzureRmResourceGroup -Name $resourceGroupName -Location $Location
 
@@ -127,22 +138,22 @@ elseif ($Mode -eq "ntier") {
 	#2 ra-aad-ntier-web-deployment
 	Write-Host "Deploying web tier..."
 	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-web-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-		-TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $webTierParametersFile
+		-TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $webTierParametersFile -protectedSettings $protectedSettings
 
 	#3 ra-aad-ntier-biz-deployment
 	Write-Host "Deploying business tier..."
 	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-biz-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-		-TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $businessTierParametersFile
+		-TemplateUri $loadBalancedVmSetTemplate.AbsoluteUri -TemplateParameterFile $businessTierParametersFile -protectedSettings $protectedSettings
 
 	#4 ra-aad-ntier-data-deployment
 	Write-Host "Deploying data tier..."
 	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-data-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-		-TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $dataTierParametersFile
+		-TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $dataTierParametersFile -protectedSettings $protectedSettings
 
 	#5 ra-aad-ntier-mgmt-deployment
 	Write-Host "Deploying management tier..."
 	New-AzureRmResourceGroupDeployment -Name "ra-aad-ntier-mgmt-deployment" -ResourceGroupName $resourceGroup.ResourceGroupName `
-		-TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementTierParametersFile
+		-TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementTierParametersFile -protectedSettings $protectedSettings
 
 	#6 ra-aad-ntier-nsg-deployment
 	Write-Host "Deploying network security group"
