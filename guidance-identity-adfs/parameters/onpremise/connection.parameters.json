@@ -6,7 +6,6 @@
       "value": {
         "name": "ra-adfs-onpremise-vpn-cn",
         "connectionType": "Vnet2Vnet",
-        "sharedKey": "123secret",
         "virtualNetworkGateway1": {
           "name": "ra-adfs-onpremise-vpn-vgw",
           "resourceGroup": "ra-adfs-onpremise-rg"
