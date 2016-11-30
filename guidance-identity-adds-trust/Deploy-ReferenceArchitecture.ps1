@@ -1,6 +1,7 @@
 ﻿#
 # Deploy_ReferenceArchitecture.ps1
 #
+[cmdletbinding(DefaultParameterSetName='DEV-PASSWORD')]
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
@@ -10,7 +11,25 @@ param(
   
   [Parameter(Mandatory=$false)]
   [ValidateSet("Prepare", "Onpremise", "Infrastructure", "CreateVpn", "AzureADDS", "WebTier", "Workload", "PublicDmz", "PrivateDmz")]
-  $Mode = "Prepare"
+  $Mode = "Prepare",
+
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Security.SecureString]$AdminPassword,
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SshPublicKey,
+
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $KeyVaultName,
+  [Parameter(Mandatory=$false, ParameterSetName="PROD")]
+  [ValidateSet("adminPassword", "sshPublicKey")]
+  $KeyVaultSecretName = "adminPassword",
+
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SharedKey,
+
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $SharedKeySecretName
 )
 
 $ErrorActionPreference = "Stop"
@@ -49,13 +68,10 @@ $onpremiseAddAddsDomainControllerExtensionParametersFile = [System.IO.Path]::Com
 $onpremiseVirtualNetworkGatewayParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\onpremise\virtualNetworkGateway.parameters.json")
 $onpremiseConnectionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\onpremise\connection.parameters.json")
 
-
 # Azure ADDS Parameter Files
 $azureAddsVirtualMachinesParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\azure\virtualMachines-adds.parameters.json")
-
 $azureCreateAddsForestExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\azure\create-adds-forest-extension.parameters.json")
 $azureAddAddsDomainControllerExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\azure\add-adds-domain-controller.parameters.json")
-
 $azureVirtualNetworkGatewayParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\azure\virtualNetworkGateway.parameters.json")
 $azureVirtualNetworkParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\azure\virtualNetwork.parameters.json")
 $azureVirtualNetworkDnsParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\azure\virtualNetwork-adds-dns.parameters.json")
@@ -68,7 +84,6 @@ $publicDmzParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\
 $azureWebVmDomainJoinExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\azure\web-vm-domain-join.parameters.json")
 $azureWebVmEnableWindowsAuthExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\azure\web-vm-enable-windows-auth.parameters.json")
 
-
 # Azure Onpremise Deployments
 $onpremiseNetworkResourceGroupName = "ra-adtrust-onpremise-rg"
 
@@ -80,6 +95,23 @@ $addsResourceGroupName = "ra-adtrust-adds-rg"
 
 # Login to Azure and select your subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
+
+$protectedSettings = @{"adminPassword" = $null; "sshPublicKey" = $null}
+switch ($PSCmdlet.ParameterSetName) {
+  "DEV-PASSWORD" { 
+	$protectedSettings["adminPassword"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminPassword))
+	$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
+  }
+  "DEV-SSH" { 
+	$protectedSettings["sshPublicKey"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SshPublicKey))
+	$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
+  }
+  "PROD" { 
+	$protectedSettings[$KeyVaultSecretName] = (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecretName).SecretValueText
+	$protectedSettings.Add("sharedKey", (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SharedKeySecretName).SecretValueText)
+  }
+  default { throw "Invalid parameters specified." }
+}
 
 ##########################################################################
 # Deploy On premises network and on premise ADDS
@@ -95,7 +127,7 @@ if ($Mode -eq "Onpremise" -Or $Mode -eq "Prepare") {
     Write-Host "Deploying ADDS servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-onpremise-adds-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $onpremiseADDSVirtualMachinesParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $onpremiseADDSVirtualMachinesParametersFile -protectedSettings $protectedSettings
 
     # Remove the Azure DNS entry since the forest will create a DNS forwarding entry.
     Write-Host "Updating virtual network DNS servers..."
@@ -133,7 +165,7 @@ if ($Mode -eq "Infrastructure" -Or $Mode -eq "Prepare") {
 
     Write-Host "Deploying jumpbox..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-jumpbox-deployment" -ResourceGroupName $securityResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementParametersFile -protectedSettings $protectedSettings
 }
 
 if ($Mode -eq "CreateVpn" -Or $Mode -eq "Prepare") {
@@ -147,12 +179,12 @@ if ($Mode -eq "CreateVpn" -Or $Mode -eq "Prepare") {
 
     Write-Host "Deploying Azure Virtual Network Gateway..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-vpn-gateway-deployment" -ResourceGroupName $azureNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualNetworkGatewayTemplate.AbsoluteUri -TemplateParameterFile $azureVirtualNetworkGatewayParametersFile
+        -TemplateUri $virtualNetworkGatewayTemplate.AbsoluteUri -TemplateParameterFile $azureVirtualNetworkGatewayParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Creating Onpremise connection..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-onpremise-connection-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
-        -TemplateFile $onPremiseConnectionTemplateFile -TemplateParameterFile $onpremiseConnectionParametersFile
+        -TemplateFile $onPremiseConnectionTemplateFile -TemplateParameterFile $onpremiseConnectionParametersFile -protectedSettings $protectedSettings
 }
 
 ##########################################################################
@@ -170,7 +202,7 @@ if ($Mode -eq "AzureADDS" -Or $Mode -eq "Prepare") {
     Write-Host "Deploying ADDS servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-adds-deployment" `
 		-ResourceGroupName $addsResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $azureAddsVirtualMachinesParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $azureAddsVirtualMachinesParametersFile -protectedSettings $protectedSettings
 
     # Remove the Azure DNS entry since the forest will create a DNS forwarding entry.
     Write-Host "Updating virtual network DNS servers..."
@@ -199,7 +231,7 @@ if ($Mode -eq "WebTier" -Or $Mode -eq "Prepare") {
     Write-Host "Deploying web load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-web-deployment"  `
 		-ResourceGroupName $workloadResourceGroup.ResourceGroupName `
-        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $webLoadBalancerParametersFile
+        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $webLoadBalancerParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Joining Web Vm to domain..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-web-vm-join-domain-deployment" `
@@ -228,13 +260,6 @@ if ($Mode -eq "AzureADDS" -Or $Mode -eq "Prepare") {
 	Write-Host "##########################################################################"
 }
 
-
-
-
-
-
-
-
 ##########################################################################
 # Deployment workload and Dmz in cloud (optional for this guidance)
 ##########################################################################
@@ -251,11 +276,11 @@ if ($Mode -eq "Workload") {
 
     Write-Host "Deploying biz load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-biz-deployment" -ResourceGroupName $workloadResourceGroup.ResourceGroupName `
-        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $bizLoadBalancerParametersFile
+        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $bizLoadBalancerParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Deploying data load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-data-deployment" -ResourceGroupName $workloadResourceGroup.ResourceGroupName `
-        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $dataLoadBalancerParametersFile
+        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $dataLoadBalancerParametersFile -protectedSettings $protectedSettings
 }
 
 if ($Mode -eq "PublicDMZ" -Or $Mode -eq "Prepare") {
@@ -264,7 +289,7 @@ if ($Mode -eq "PublicDMZ" -Or $Mode -eq "Prepare") {
 
     Write-Host "Deploying public DMZ..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-dmz-public-deployment" -ResourceGroupName $azureNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $publicDmzParametersFile
+        -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $publicDmzParametersFile -protectedSettings $protectedSettings
 }
 
 if ($Mode -eq "PrivateDmz") {
@@ -273,6 +298,6 @@ if ($Mode -eq "PrivateDmz") {
 
     Write-Host "Deploying private DMZ..."
     New-AzureRmResourceGroupDeployment -Name "ra-adtrust-dmz-private-deployment" -ResourceGroupName $azureNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $privateDmzParametersFile
+        -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $privateDmzParametersFile -protectedSettings $protectedSettings
 }
 
