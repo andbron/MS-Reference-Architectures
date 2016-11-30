@@ -6,7 +6,6 @@
       "value": {
         "name": "ra-adtrust-onpremise-vpn-cn",
         "connectionType": "Vnet2Vnet",
-        "sharedKey": "123secret",
         "virtualNetworkGateway1": {
           "name": "ra-adtrust-onpremise-vpn-vgw",
           "resourceGroup": "ra-adtrust-onpremise-rg"
