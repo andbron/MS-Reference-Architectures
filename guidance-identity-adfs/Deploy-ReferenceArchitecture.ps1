@@ -1,6 +1,7 @@
 ﻿#
 # Deploy_ReferenceArchitecture.ps1
 #
+[cmdletbinding(DefaultParameterSetName='DEV-PASSWORD')]
 param(
   [Parameter(Mandatory=$true)]
   $SubscriptionId,
@@ -10,7 +11,25 @@ param(
   
   [Parameter(Mandatory=$false)]
   [ValidateSet("Prepare", "Adfs",  "Proxy1", "Proxy2", "Onpremise", "Infrastructure", "CreateVpn", "AzureADDS", "AdfsVm", "PublicDmz", "ProxyVm", "Workload", "PrivateDmz")]
-  $Mode = "Prepare"
+  $Mode = "Prepare",
+
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Security.SecureString]$AdminPassword,
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SshPublicKey,
+
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $KeyVaultName,
+  [Parameter(Mandatory=$false, ParameterSetName="PROD")]
+  [ValidateSet("adminPassword", "sshPublicKey")]
+  $KeyVaultSecretName = "adminPassword",
+
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-PASSWORD")]
+  [Parameter(Mandatory=$true, ParameterSetName="DEV-SSH")]
+  [Security.SecureString]$SharedKey,
+
+  [Parameter(Mandatory=$true, ParameterSetName="PROD")]
+  $SharedKeySecretName
 )
 
 $ErrorActionPreference = "Stop"
@@ -93,6 +112,23 @@ $adfsproxyResourceGroupName = "ra-adfs-proxy-rg"
 # Login to Azure and select your subscription
 Login-AzureRmAccount -SubscriptionId $SubscriptionId | Out-Null
 
+$protectedSettings = @{"adminPassword" = $null; "sshPublicKey" = $null}
+switch ($PSCmdlet.ParameterSetName) {
+  "DEV-PASSWORD" { 
+	$protectedSettings["adminPassword"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminPassword))
+	$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
+  }
+  "DEV-SSH" { 
+	$protectedSettings["sshPublicKey"] = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SshPublicKey))
+	$protectedSettings.Add("sharedKey", [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($SharedKey)))
+  }
+  "PROD" { 
+	$protectedSettings[$KeyVaultSecretName] = (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $KeyVaultSecretName).SecretValueText
+	$protectedSettings.Add("sharedKey", (Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SharedKeySecretName).SecretValueText)
+  }
+  default { throw "Invalid parameters specified." }
+}
+
 ##########################################################################
 # Deploy On premises network and on premise ADDS
 ##########################################################################
@@ -107,7 +143,7 @@ if ($Mode -eq "Onpremise" -Or $Mode -eq "Prepare") {
     Write-Host "Deploying ADDS servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-onpremise-adds-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $onpremiseADDSVirtualMachinesParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $onpremiseADDSVirtualMachinesParametersFile -protectedSettings $protectedSettings
 
     # Remove the Azure DNS entry since the forest will create a DNS forwarding entry.
     Write-Host "Updating virtual network DNS servers..."
@@ -145,7 +181,7 @@ if ($Mode -eq "Infrastructure" -Or $Mode -eq "Prepare") {
 
     Write-Host "Deploying jumpbox..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-jumpbox-deployment" -ResourceGroupName $securityResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $managementParametersFile -protectedSettings $protectedSettings
 }
 
 if ($Mode -eq "CreateVpn" -Or $Mode -eq "Prepare") {
@@ -164,7 +200,7 @@ if ($Mode -eq "CreateVpn" -Or $Mode -eq "Prepare") {
     Write-Host "Creating Onpremise connection..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-onpremise-connection-deployment" `
         -ResourceGroupName $onpremiseNetworkResourceGroup.ResourceGroupName `
-        -TemplateFile $onPremiseConnectionTemplateFile -TemplateParameterFile $onpremiseConnectionParametersFile
+        -TemplateFile $onPremiseConnectionTemplateFile -TemplateParameterFile $onpremiseConnectionParametersFile -protectedSettings $protectedSettings
 }
 
 ##########################################################################
@@ -186,7 +222,7 @@ if ($Mode -eq "AzureADDS" -Or $Mode -eq "Prepare") {
 
     Write-Host "Deploying ADDS servers..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-adds-deployment" -ResourceGroupName $addsResourceGroup.ResourceGroupName `
-        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $azureAddsVirtualMachinesParametersFile
+        -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $azureAddsVirtualMachinesParametersFile -protectedSettings $protectedSettings
 
     # Join the domain
     Write-Host "Joining ADDS Vms to domain..."
@@ -225,7 +261,7 @@ if ($Mode -eq "AdfsVm" -Or $Mode -eq "Prepare") {
 
     Write-Host "Deploying adfs load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-adfs-deployment" -ResourceGroupName $adfsResourceGroup.ResourceGroupName `
-        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $adfsLoadBalancerParametersFile
+        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $adfsLoadBalancerParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Joining ADFS Vms to domain..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-adfs-farm-join-domain-deployment" `
@@ -243,7 +279,7 @@ if ($Mode -eq "PublicDMZ" -Or $Mode -eq "Prepare") {
 
     Write-Host "Deploying public DMZ..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-dmz-public-deployment" -ResourceGroupName $azureNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $publicDmzParametersFile
+        -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $publicDmzParametersFile -protectedSettings $protectedSettings
 }
 
 if ($Mode -eq "ProxyVm" -Or $Mode -eq "Prepare") {
@@ -254,7 +290,7 @@ if ($Mode -eq "ProxyVm" -Or $Mode -eq "Prepare") {
 
     Write-Host "Deploying Adfs proxy load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-adfs-deployment" -ResourceGroupName $adfsproxyResourceGroup.ResourceGroupName `
-        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $adfsproxyLoadBalancerParametersFile
+        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $adfsproxyLoadBalancerParametersFile -protectedSettings $protectedSettings
 
 	Write-Host  
 	Write-Host "Preparation is completed."
@@ -293,9 +329,6 @@ if ($Mode -eq "ProxyVm" -Or $Mode -eq "Prepare") {
 #      \Certificates (Local Computer)\Personal\Certificates\adfs.contoso.com
 #      \Certificates (Local Computer)\Trusted Root Certification Authorities\Certificates\MyFakeRootCertificateAuthority 
 ##########################################################################
-
-
-
 
 ##########################################################################
 # Install ADFS Services in ADFS Farm Vms in cloud
@@ -414,34 +447,6 @@ if ($Mode -eq "Proxy2" ) {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ##########################################################################
 # Deployment workload and Private Dmz in cloud (optional for this guidance)
 ##########################################################################
@@ -454,15 +459,15 @@ if ($Mode -eq "Workload") {
 
     Write-Host "Deploying web load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-web-deployment" -ResourceGroupName $workloadResourceGroup.ResourceGroupName `
-        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $webLoadBalancerParametersFile
+        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $webLoadBalancerParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Deploying biz load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-biz-deployment" -ResourceGroupName $workloadResourceGroup.ResourceGroupName `
-        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $bizLoadBalancerParametersFile
+        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $bizLoadBalancerParametersFile -protectedSettings $protectedSettings
 
     Write-Host "Deploying data load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-data-deployment" -ResourceGroupName $workloadResourceGroup.ResourceGroupName `
-        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $dataLoadBalancerParametersFile
+        -TemplateUri $loadBalancerTemplate.AbsoluteUri -TemplateParameterFile $dataLoadBalancerParametersFile -protectedSettings $protectedSettings
 }
 
 if ($Mode -eq "PrivateDmz") {
@@ -471,6 +476,6 @@ if ($Mode -eq "PrivateDmz") {
 
     Write-Host "Deploying private DMZ..."
     New-AzureRmResourceGroupDeployment -Name "ra-adfs-dmz-private-deployment" -ResourceGroupName $azureNetworkResourceGroup.ResourceGroupName `
-        -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $privateDmzParametersFile
+        -TemplateUri $dmzTemplate.AbsoluteUri -TemplateParameterFile $privateDmzParametersFile -protectedSettings $protectedSettings
 }
 

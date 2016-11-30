@@ -20,7 +20,6 @@
       "value": {
         "name": "ra-adfs-vpn-cn",
         "connectionType": "Vnet2Vnet",
-        "sharedKey": "123secret",
         "virtualNetworkGateway1": {
           "name": "ra-adfs-vpn-vgw",
           "resourceGroup": "ra-adfs-network-rg"
