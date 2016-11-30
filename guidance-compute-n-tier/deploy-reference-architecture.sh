@@ -132,69 +132,49 @@ NETWORK_SECURITY_GROUP_DEPLOYMENT_NAME="ra-ntier-nsg-deployment"
 azure config mode arm
 
 # Create the resource group, saving the output for later.
-RESOURCE_GROUP_OUTPUT=$(azure group create --name $RESOURCE_GROUP_NAME --location $LOCATION --subscription $SUBSCRIPTION_ID --json) || exit 1
+RESOURCE_GROUP_OUTPUT=$(azure group create --name $RESOURCE_GROUP_NAME --location $LOCATION --subscription $SUBSCRIPTION_ID --json)
 
 # Create the virtual network
 echo "Deploying virtual network..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $VIRTUAL_NETWORK_DEPLOYMENT_NAME \
 --template-uri $VIRTUAL_NETWORK_TEMPLATE_URI --parameters-file $VIRTUAL_NETWORK_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID || exit 1
+--subscription $SUBSCRIPTION_ID
 
 # Create availability set for Cassandra cluster
 echo "Deploying availability set for data tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $AVAILABILITY_SET_DEPLOYMENT_NAME \
 --template-uri $AVAILABILITY_SET_TEMPLATE_URI --parameters-file $AVAILABILITY_SET_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID || exit 1
+--subscription $SUBSCRIPTION_ID
 
 echo "Deploying web tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $WEB_TIER_DEPLOYMENT_NAME \
 --template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters-file $WEB_TIER_PARAMETERS_PATH \
 --subscription $SUBSCRIPTION_ID 
 
-if [ "$?" != "0" ]; then 
-	echo "ERROR: Deploying web tier..." 1>&2
-	exit 1
-fi
-
 echo "Deploying business tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $BIZ_TIER_DEPLOYMENT_NAME \
 --template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters-file $BIZ_TIER_PARAMETERS_PATH \
 --subscription $SUBSCRIPTION_ID
-
-if [ "$?" != "0" ]; then 
-	echo "ERROR: Deploying business tier..." 1>&2
-	exit 1
-fi
 
 echo "Deploying data tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $DATA_TIER_DEPLOYMENT_NAME \
 --template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters-file $DATA_TIER_PARAMETERS_PATH \
 --subscription $SUBSCRIPTION_ID
 
-if [ "$?" != "0" ]; then 
-	echo "ERROR: Deploying data tier..." 1>&2
-	exit 1
-fi
-
 echo "Deploying jumpbox in management tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $MGMT_TIER_JUMPBOX_DEPLOYMENT_NAME \
 --template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters-file $MGMT_TIER_JUMPBOX_PARAMETERS_PATH \
 --subscription $SUBSCRIPTION_ID
 
-if [ "$?" != "0" ]; then 
-	echo "ERROR: Deploying jumpbox ..." 1>&2
-	exit 1
-fi
-
 echo "Deploying operations center in management tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $MGMT_TIER_OPS_DEPLOYMENT_NAME \
 --template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters-file $MGMT_TIER_OPS_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID || exit 1
+--subscription $SUBSCRIPTION_ID
 
 echo "Deploying network security group..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $NETWORK_SECURITY_GROUP_DEPLOYMENT_NAME \
 --template-uri $NETWORK_SECURITY_GROUP_TEMPLATE_URI --parameters-file $NETWORK_SECURITY_GROUP_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID || exit 1
+--subscription $SUBSCRIPTION_ID
 
 # Display json output
 echo "==================================="
@@ -202,27 +182,27 @@ echo "==================================="
 echo $RESOURCE_GROUP_OUTPUT
 
 azure group deployment show --resource-group $RESOURCE_GROUP_NAME --name $VIRTUAL_NETWORK_DEPLOYMENT_NAME \
---subscription $SUBSCRIPTION_ID --json || exit 1
+--subscription $SUBSCRIPTION_ID --json
 
 azure group deployment show --resource-group $RESOURCE_GROUP_NAME --name $AVAILABILITY_SET_DEPLOYMENT_NAME \
---subscription $SUBSCRIPTION_ID --json || exit 1
+--subscription $SUBSCRIPTION_ID --json
 
 azure group deployment show --resource-group $RESOURCE_GROUP_NAME --name $WEB_TIER_DEPLOYMENT_NAME \
---subscription $SUBSCRIPTION_ID --json || exit 1
+--subscription $SUBSCRIPTION_ID --json
 
 azure group deployment show --resource-group $RESOURCE_GROUP_NAME --name $BIZ_TIER_DEPLOYMENT_NAME \
---subscription $SUBSCRIPTION_ID --json || exit 1
+--subscription $SUBSCRIPTION_ID --json
 
 azure group deployment show --resource-group $RESOURCE_GROUP_NAME --name $DATA_TIER_DEPLOYMENT_NAME \
---subscription $SUBSCRIPTION_ID --json || exit 1
+--subscription $SUBSCRIPTION_ID --json
 
 azure group deployment show --resource-group $RESOURCE_GROUP_NAME --name $MGMT_TIER_JUMPBOX_DEPLOYMENT_NAME \
---subscription $SUBSCRIPTION_ID --json || exit 1
+--subscription $SUBSCRIPTION_ID --json
 
 azure group deployment show --resource-group $RESOURCE_GROUP_NAME --name $MGMT_TIER_OPS_DEPLOYMENT_NAME \
---subscription $SUBSCRIPTION_ID --json || exit 1
+--subscription $SUBSCRIPTION_ID --json
 
 azure group deployment show --resource-group $RESOURCE_GROUP_NAME --name $NETWORK_SECURITY_GROUP_DEPLOYMENT_NAME \
---subscription $SUBSCRIPTION_ID --json || exit 1
+--subscription $SUBSCRIPTION_ID --json
 
 echo "==================================="
