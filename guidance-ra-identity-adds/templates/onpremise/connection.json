@@ -10,6 +10,12 @@
     },
     "connectionSettings": {
       "type": "object"
+    },
+    "protectedSettings": {
+      "type": "secureObject",
+      "metadata": {
+        "description": "Protected settings for building block"
+      }
     }
   },
   "variables": {
@@ -35,6 +41,9 @@
           },
           "connectionSettings": {
             "value": "[parameters('connectionSettings')]"
+          },
+          "protectedSettings": {
+            "value": "[parameters('protectedSettings')]"
           }
         }
       }
