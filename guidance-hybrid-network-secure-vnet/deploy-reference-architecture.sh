@@ -82,7 +82,7 @@ then
   showErrorAndUsage "Location must be provided"
 fi
 
-if grep -P -v $URI_REGEX <<< $TEMPLATE_ROOT_URI > /dev/null
+if grep -P -v $URI_REGEX <<< $BUILDINGBLOCKS_ROOT_URI > /dev/null
 then
   showErrorAndUsage "Invalid value for BUILDINGBLOCKS_ROOT_URI: ${BUILDINGBLOCKS_ROOT_URI}"
 fi
