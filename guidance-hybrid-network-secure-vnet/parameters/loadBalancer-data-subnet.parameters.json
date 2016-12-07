@@ -117,7 +117,7 @@
     "virtualNetworkSettings": {
       "value": {
         "name": "ra-vnet",
-        "resourceGroup": "ra-private-dmz-rg1"
+        "resourceGroup": "ra-private-dmz-rg"
       }
     },
     "buildingBlockSettings": {
