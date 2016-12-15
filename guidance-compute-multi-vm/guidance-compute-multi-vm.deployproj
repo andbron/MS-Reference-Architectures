@@ -40,6 +40,7 @@
     <None Include="parameters\windows\networkSecurityGroups.parameters.json" />
     <None Include="parameters\windows\loadBalancer.parameters.json" />
     <None Include="parameters\windows\virtualNetwork.parameters.json" />
+    <None Include="parameters.js" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>
