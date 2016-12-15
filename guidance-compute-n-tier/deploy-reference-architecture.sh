@@ -4,7 +4,13 @@ RESOURCE_GROUP_NAME="ra-ntier-cassandra-rg"
 LOCATION="centralus"
 OS_TYPE="linux"
 
-TEMPLATE_ROOT_URI=${TEMPLATE_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/master/"}
+ADMIN_PASSWORD=""
+SSH_PUBLIC_KEY=""
+KEYVAULT_NAME=""
+KEYVAULT_SECRET_NAME=""
+AUTHENTICATION_TYPE="adminPassword"
+
+TEMPLATE_ROOT_URI=${TEMPLATE_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/roshar/securekeys/"}
 # Make sure we have a trailing slash
 [[ "${TEMPLATE_ROOT_URI}" != */ ]] && TEMPLATE_ROOT_URI="${TEMPLATE_ROOT_URI}/"
 
@@ -43,6 +49,11 @@ showErrorAndUsage() {
   echo "  options:"
   echo "    -l, --location <location>"
   echo "    -s, --subscription <subscription-id>"
+  echo "    -p, --password <admin-password>"
+  echo "    -k, --ssh-public-key <ssh-public-key>"
+  echo "    -v, --keyvault <keyvault-name>"
+  echo "    -n, --secret-name <keyvault-secret-name>"
+  echo "    -t, --auth-type <adminPassword | sshPublicKey>"
   echo
   exit 1
 }
@@ -66,12 +77,51 @@ do
       LOCATION="$2"
       shift
       ;;
+	-p|--password)
+      ADMIN_PASSWORD="$2"
+      shift
+      ;;
+	-k|--ssh-public-key)
+      SSH_PUBLIC_KEY="$2"
+      shift
+      ;;
+	-v|--keyvault)
+      KEYVAULT_NAME="$2"
+      shift
+      ;;
+	-n|--secret-name)
+      KEYVAULT_SECRET_NAME="$2"
+      shift
+      ;;
+	-t|--auth-type)
+      AUTHENTICATION_TYPE="$2"
+      shift
+      ;;
     *)
       showErrorAndUsage "Unknown option: $1"
     ;;
   esac
   shift
 done
+
+if validate $AUTHENTICATION_TYPE "adminPassword" "sshPublicKey";
+then
+  showErrorAndUsage "Invalid Auth Type : '${AUTHENTICATION_TYPE}'  Valid values are 'adminPassword' or 'sshPublicKey'"
+fi
+
+declare -A parameters=( ["-sshPublicKey"]="" ["-adminPassword"]="")
+
+if [[ "$SSH_PUBLIC_KEY" != "" ]]; then
+  parameters["-sshPublicKey"]=$SSH_PUBLIC_KEY
+elif [[ "$ADMIN_PASSWORD" != "" ]]; then
+  parameters["-adminPassword"]=$ADMIN_PASSWORD
+elif [[ "$KEYVAULT_NAME" != "" ]] && [[ "$KEYVAULT_SECRET_NAME" != "" ]] && [[ "$AUTHENTICATION_TYPE" != "" ]]; then 
+  secretJson=$(echo $(azure keyvault secret show -u "$KEYVAULT_NAME" -s "$KEYVAULT_SECRET_NAME" --json))
+  secret=$(node ./parameters.js -v "$secretJson")
+  parameters["-$AUTHENTICATION_TYPE"]=$secret
+else
+  showErrorAndUsage "<admin-password> OR <ssh-public-key> OR (<keyvault-name>, <keyvault-secret-name>, <auth-type>) must be provided"
+fi
 
 if ! [[ $SUBSCRIPTION_ID =~ ^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$  ]];
 then
@@ -129,6 +179,24 @@ NETWORK_SECURITY_GROUP_TEMPLATE_URI="${TEMPLATE_ROOT_URI}templates/buildingBlock
 NETWORK_SECURITY_GROUP_PARAMETERS_PATH="${SCRIPT_DIR}/parameters/${OS_TYPE}/networkSecurityGroups.parameters.json"
 NETWORK_SECURITY_GROUP_DEPLOYMENT_NAME="ra-ntier-nsg-deployment"
 
+# Get parameters from the parameter file and append 'protectedSettings' to it.
+# Return JSON-formatted string containing all parameters.
+# Example-
+# {"protectedSettings":{"value":{"sshPublicKey":"","adminPassword":"<Your Password>"}},"virtualNetworkSettings":{"value":{"name":"ra-
+# single-vm-vnet","addressPrefixes":["10.0.0.0/16"],"subnets":[{"name":"web","addressPrefix":"10.0.1.0/24"}],"dnsServers":
+# []}}}
+CMD="node ./parameters.js"
+for key in "${!parameters[@]}"; do 
+  CMD+=" $key ${parameters[$key]}";
+done
+CMD+=" -f "
+
+MGMT_TIER_JUMPBOX_PARAMETERS=$($CMD$MGMT_TIER_JUMPBOX_PARAMETERS_PATH)
+MGMT_TIER_OPS_PARAMETERS=$($CMD$MGMT_TIER_OPS_PARAMETERS_PATH)
+WEB_TIER_PARAMETERS=$($CMD$WEB_TIER_PARAMETERS_PATH)
+BIZ_TIER_PARAMETERS=$($CMD$BIZ_TIER_PARAMETERS_PATH)
+DATA_TIER_PARAMETERS=$($CMD$DATA_TIER_PARAMETERS_PATH)
+
 azure config mode arm
 
 # Create the resource group, saving the output for later.
@@ -148,28 +216,30 @@ azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $AVAI
 
 echo "Deploying web tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $WEB_TIER_DEPLOYMENT_NAME \
---template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters-file $WEB_TIER_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID 
+--template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters "$WEB_TIER_PARAMETERS" \
+--subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying business tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $BIZ_TIER_DEPLOYMENT_NAME \
---template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters-file $BIZ_TIER_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID
+--template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters "$BIZ_TIER_PARAMETERS" \
+--subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying data tier..."
+echo $DATA_TIER_PARAMETERS
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $DATA_TIER_DEPLOYMENT_NAME \
---template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters-file $DATA_TIER_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID
+--template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters "$DATA_TIER_PARAMETERS" \
+--subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying jumpbox in management tier..."
+echo $MGMT_TIER_JUMPBOX_PARAMETERS
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $MGMT_TIER_JUMPBOX_DEPLOYMENT_NAME \
---template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters-file $MGMT_TIER_JUMPBOX_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID
+--template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters "$MGMT_TIER_JUMPBOX_PARAMETERS" \
+--subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying operations center in management tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $MGMT_TIER_OPS_DEPLOYMENT_NAME \
---template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters-file $MGMT_TIER_OPS_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID
+--template-uri $VIRTUAL_MACHINE_TEMPLATE_URI --parameters "$MGMT_TIER_OPS_PARAMETERS" \
+--subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying network security group..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $NETWORK_SECURITY_GROUP_DEPLOYMENT_NAME \

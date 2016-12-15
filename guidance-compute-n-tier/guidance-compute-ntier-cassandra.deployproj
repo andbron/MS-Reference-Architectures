@@ -37,6 +37,7 @@
     <None Include="extensions\linux\install-cassandra.sh" />
     <None Include="extensions\linux\install-apache.sh" />
     <None Include="parameterLink-resolver.json" />
+    <None Include="parameters.js" />
     <None Include="parameters\linux\availabilitySet.parameters.json" />
     <None Include="parameters\linux\businessTier.parameters.json" />
     <None Include="parameters\linux\dataTier.parameters.json" />
