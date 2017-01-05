@@ -206,13 +206,13 @@ RESOURCE_GROUP_OUTPUT=$(azure group create --name $RESOURCE_GROUP_NAME --locatio
 echo "Deploying virtual network..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $VIRTUAL_NETWORK_DEPLOYMENT_NAME \
 --template-uri $VIRTUAL_NETWORK_TEMPLATE_URI --parameters-file $VIRTUAL_NETWORK_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID
+--subscription $SUBSCRIPTION_ID || exit 1
 
 # Create availability set for Cassandra cluster
 echo "Deploying availability set for data tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $AVAILABILITY_SET_DEPLOYMENT_NAME \
 --template-uri $AVAILABILITY_SET_TEMPLATE_URI --parameters-file $AVAILABILITY_SET_PARAMETERS_PATH \
---subscription $SUBSCRIPTION_ID
+--subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying web tier..."
 azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $WEB_TIER_DEPLOYMENT_NAME \
