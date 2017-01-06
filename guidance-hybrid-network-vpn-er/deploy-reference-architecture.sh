@@ -4,7 +4,11 @@ RESOURCE_GROUP_NAME="ra-hybrid-vpn-er-rg"
 LOCATION="centralus"
 MODE=""
 
-TEMPLATE_ROOT_URI=${TEMPLATE_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/master/"}
+KEYVAULT_NAME=""
+SHARED_KEY=""
+SHARED_KEY_KV_SECRET_NAME=""
+
+TEMPLATE_ROOT_URI=${TEMPLATE_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/roshar/securekeys/"}
 # Make sure we have a trailing slash
 [[ "${TEMPLATE_ROOT_URI}" != */ ]] && TEMPLATE_ROOT_URI="${TEMPLATE_ROOT_URI}/"
 
@@ -43,6 +47,9 @@ showErrorAndUsage() {
   echo "    -l, --location <location>"
   echo "    -m, --mode <circuit | network>"
   echo "    -s, --subscription <subscription-id>"
+  echo "    -v, --keyvault <keyvault-name>"
+  echo "    --vpn-shared-key <vpn-shared-key>"
+  echo "    --vpn-secret-name <vpn-secret-name>"
   echo
   exit 1
 }
@@ -68,12 +75,36 @@ do
       SUBSCRIPTION_ID="$2"
       shift
       ;;
+	-v|--keyvault)
+      KEYVAULT_NAME="$2"
+      shift
+      ;;
+	--vpn-shared-key)
+      SHARED_KEY="$2"
+      shift
+      ;;
+	--vpn-secret-name)
+      SHARED_KEY_KV_SECRET_NAME="$2"
+      shift
+      ;;
     *)
       showErrorAndUsage "Unknown option: $1"
     ;;
   esac
   shift
 done
+
+declare -A parameters=( ["-sharedKey"]="")
+
+if [[ "$SHARED_KEY" != "" ]]; then
+  parameters["-sharedKey"]=$SHARED_KEY
+elif [[ "$KEYVAULT_NAME" != "" ]] && [[ "$SHARED_KEY_KV_SECRET_NAME" != "" ]]; then 
+  secretJson=$(echo $(azure keyvault secret show -u "$KEYVAULT_NAME" -s "$SHARED_KEY_KV_SECRET_NAME" --json))
+  secret=$(node ./parameters.js -v "$secretJson")
+  parameters["-sharedKey"]=$secret
+else
+  showErrorAndUsage "<vpn-shared-key> OR (<keyvault-name>, <vpn-secret-name>) must be provided"
+fi
 
 if ! [[ $SUBSCRIPTION_ID =~ ^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$  ]];
 then
@@ -117,6 +148,22 @@ VIRTUAL_NETWORK_GATEWAY_TEMPLATE_URI="${TEMPLATE_ROOT_URI}templates/buildingBloc
 VIRTUAL_NETWORK_GATEWAY_PARAMETERS_PATH="${SCRIPT_DIR}/parameters/virtualNetworkGateway-vpn.parameters.json"
 VIRTUAL_NETWORK_GATEWAY_DEPLOYMENT_NAME="ra-hybrid-vpn-deployment"
 
+# Get parameters from the parameter file and append 'protectedSettings' to it.
+# Return JSON-formatted string containing all parameters.
+# Example-
+# {"protectedSettings":{"value":{"sshPublicKey":"","adminPassword":"<Your Password>"}},"virtualNetworkSettings":{"value":{"name":"ra-
+# single-vm-vnet","addressPrefixes":["10.0.0.0/16"],"subnets":[{"name":"web","addressPrefix":"10.0.1.0/24"}],"dnsServers":
+# []}}}
+CMD="node ./parameters.js"
+for key in "${!parameters[@]}"; do 
+  CMD+=" $key ${parameters[$key]}";
+done
+CMD+=" -f "
+
+VIRTUAL_NETWORK_GATEWAY_PARAMETERS=$($CMD$VIRTUAL_NETWORK_GATEWAY_PARAMETERS_PATH)
+
+echo $VIRTUAL_NETWORK_GATEWAY_PARAMETERS
+
 azure config mode arm
 
 if ! RESOURCE_GROUP_OUTPUT=$(azure group show --name $RESOURCE_GROUP_NAME --subscription $SUBSCRIPTION_ID --json 2> /dev/null)
@@ -156,7 +203,7 @@ then
 
   echo "Deploying virtual network gateway..."
   azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name $VIRTUAL_NETWORK_GATEWAY_DEPLOYMENT_NAME \
-  --template-uri $VIRTUAL_NETWORK_GATEWAY_TEMPLATE_URI --parameters-file $VIRTUAL_NETWORK_GATEWAY_PARAMETERS_PATH \
+  --template-uri $VIRTUAL_NETWORK_GATEWAY_TEMPLATE_URI --parameters "$VIRTUAL_NETWORK_GATEWAY_PARAMETERS" \
   --subscription $SUBSCRIPTION_ID || exit 1
 
   # Display json output

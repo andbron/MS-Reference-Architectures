@@ -32,6 +32,7 @@
       <Visible>False</Visible>
     </None>
     <None Include="parameterLink-resolver.json" />
+    <None Include="parameters.js" />
     <None Include="parameters\virtualNetwork.parameters.json" />
     <None Include="parameters\virtualNetworkGateway.parameters.json" />
   </ItemGroup>

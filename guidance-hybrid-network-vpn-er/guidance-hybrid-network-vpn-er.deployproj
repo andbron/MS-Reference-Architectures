@@ -32,6 +32,7 @@
     </None>
     <Content Include="azuredeploy.json" />
     <Content Include="Deploy-ReferenceArchitecture.ps1" />
+    <None Include="parameters.js" />
     <None Include="parameters\expressRouteCircuit.parameters.json" />
     <None Include="parameters\virtualNetwork.parameters.json" />
     <None Include="parameters\virtualNetworkGateway-expressRoute.parameters.json" />

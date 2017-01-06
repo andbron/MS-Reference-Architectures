@@ -155,7 +155,7 @@ then
   showErrorAndUsage "Location must be provided"
 fi
 
-if grep -P -v $URI_REGEX <<< $TEMPLATE_ROOT_URI > /dev/null
+if grep -P -v $URI_REGEX <<< $BUILDINGBLOCKS_ROOT_URI > /dev/null
 then
   showErrorAndUsage "Invalid value for BUILDINGBLOCKS_ROOT_URI: ${BUILDINGBLOCKS_ROOT_URI}"
 fi
@@ -221,37 +221,37 @@ azure group deployment create --resource-group $NETWORK_RESOURCE_GROUP_NAME --na
 
 echo "Deploying load balancer and virtual machines in web subnet..."
 azure group deployment create --resource-group $WORKLOAD_RESOURCE_GROUP_NAME --name "ra-web-lb-vms-deployment" \
---template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters $WEB_SUBNET_LOADBALANCER_AND_VMS_PARAMETERS \
+--template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters "$WEB_SUBNET_LOADBALANCER_AND_VMS_PARAMETERS" \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying load balancer and virtual machines in biz subnet..."
 azure group deployment create --resource-group $WORKLOAD_RESOURCE_GROUP_NAME --name "ra-biz-lb-vms-deployment" \
---template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters $BIZ_SUBNET_LOADBALANCER_AND_VMS_PARAMETERS \
+--template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters "$BIZ_SUBNET_LOADBALANCER_AND_VMS_PARAMETERS" \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying load balancer and virtual machines in data subnet..."
 azure group deployment create --resource-group $WORKLOAD_RESOURCE_GROUP_NAME --name "ra-data-lb-vms-deployment" \
---template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters $DATA_SUBNET_LOADBALANCER_AND_VMS_PARAMETERS \
+--template-uri $LOAD_BALANCER_TEMPLATE_URI --parameters "$DATA_SUBNET_LOADBALANCER_AND_VMS_PARAMETERS" \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying jumpbox in mgmt subnet..."
 azure group deployment create --resource-group $NETWORK_RESOURCE_GROUP_NAME --name "ra-mgmt-vms-deployment" \
---template-uri $MULTI_VMS_TEMPLATE_URI --parameters $MGMT_SUBNET_VMS_PARAMETERS \
+--template-uri $MULTI_VMS_TEMPLATE_URI --parameters "$MGMT_SUBNET_VMS_PARAMETERS" \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying dmz..."
 azure group deployment create --resource-group $NETWORK_RESOURCE_GROUP_NAME --name "ra-dmz-deployment" \
---template-uri $DMZ_TEMPLATE_URI --parameters $DMZ_PARAMETERS \
+--template-uri $DMZ_TEMPLATE_URI --parameters "$DMZ_PARAMETERS" \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying internet dmz..."
 azure group deployment create --resource-group $NETWORK_RESOURCE_GROUP_NAME --name "ra-internet-dmz-deployment" \
---template-uri $DMZ_TEMPLATE_URI --parameters $INTERNET_DMZ_PARAMETERS \
+--template-uri $DMZ_TEMPLATE_URI --parameters "$INTERNET_DMZ_PARAMETERS" \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying vpn..."
 azure group deployment create --resource-group $NETWORK_RESOURCE_GROUP_NAME --name "ra-vpn-deployment" \
---template-uri $VPN_TEMPLATE_URI --parameters $VPN_PARAMETERS \
+--template-uri $VPN_TEMPLATE_URI --parameters "$VPN_PARAMETERS" \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 echo "Deploying network security group..."
