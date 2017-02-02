@@ -62,7 +62,7 @@
       "value": {
         "namePrefix": "ra-aad-ntier-web",
         "computerNamePrefix": "cn",
-        "size": "Standard_DS1",
+        "size": "Standard_DS1_v2",
         "adminUsername": "testuser",
         "adminPassword": "AweS0me@PW",
         "osType": "windows",
