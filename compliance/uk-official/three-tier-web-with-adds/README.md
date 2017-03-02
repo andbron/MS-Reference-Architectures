@@ -53,7 +53,7 @@ Architecture Diagram and Components
  extends an on-premises network to Azure allowing web based workloads
  to be accessed securely by corporate users or from the internet.
 
-![alt text](/images/diagram.png?raw=true "Azure UK-OFFICAL Three Tier Architecture")
+![alt text](images/diagram.png?raw=true "Azure UK-OFFICAL Three Tier Architecture")
 
 
  The components of this architecture include -
@@ -475,7 +475,7 @@ troubleshooting** blade.
 9. Check Azure portal notification for a message that the stage of deployment is complete and move on to the next if completed.
 10. If for some reason your deployment fails. To avoid incurring cost and orphan resources it is advisable to delete the resource group in its entirety, fix the issue and redeploy the resource groups and template.
 
-![alt text](/images/create-official-workload-rg.JPG?raw=true "Create ADDS deployment").
+![alt text](images/create-official-workload-rg.JPG?raw=true "Create ADDS deployment").
 
 
 
