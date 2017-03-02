@@ -407,7 +407,7 @@ Portal.
 ## Deployment Process
 
 A deployment for this reference architecture is available on
-[GitHub](https://aka.ms/ukofficialwebapp). The templates can be cloned or downloaded if customisation of parameters are requried.
+[GitHub](https://github.com/mspnp/reference-architectures/tree/master/compliance/uk-official/three-tier-web-with-adds). The templates can be cloned or downloaded if customisation of parameters are requried.
 The reference architecture is deployed in four stages. To deploy the architecture, follow these steps for each deployment stage -
 
 For Virtual Machines The parameter files include a hard-coded
