@@ -53,7 +53,7 @@ Architecture Diagram and Components
  extends an on-premises network to Azure allowing web based workloads
  to be accessed securely by corporate users or from the internet.
 
-![alt text](/images/diagram.png?raw=true "Azure UK-OFFICAL Three Tier Architecture")
+![alt text](images/diagram.png?raw=true "Azure UK-OFFICAL Three Tier Architecture")
 
 
  The components of this architecture include -
@@ -407,7 +407,7 @@ Portal.
 ## Deployment Process
 
 A deployment for this reference architecture is available on
-[GitHub](https://github.com/mspnp/reference-architectures/tree/master/guidance-uk-official/three-tier-web-with-adds). The templates can be cloned or downloaded if customisation of parameters are requried.
+[GitHub](https://github.com/mspnp/reference-architectures/tree/master/compliance/uk-official/three-tier-web-with-adds). The templates can be cloned or downloaded if customisation of parameters are requried.
 The reference architecture is deployed in four stages. To deploy the architecture, follow these steps for each deployment stage -
 
 For Virtual Machines The parameter files include a hard-coded
@@ -417,10 +417,10 @@ troubleshooting** blade.
 
 ## Deploy Networking Infrastructure
   
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fguidance-uk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Fvirtualnetwork.azuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fcompliance%2Fuk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Fvirtualnetwork.azuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fguidance-uk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Fvirtualnetwork.azuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fcompliance%2Fuk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Fvirtualnetwork.azuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png"/>
 </a>
 
@@ -435,10 +435,10 @@ troubleshooting** blade.
 
 
 ## Deploy Active Directory Domain 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fguidance-uk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Faads.azuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fcompliance%2Fuk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Faads.azuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fguidance-uk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Faads.azuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fcompliance%2Fuk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Faads.azuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png"/>
 </a>
 
@@ -457,10 +457,10 @@ troubleshooting** blade.
 
 
 ## Deploy operational workload infrastructure 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fguidance-uk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Fworkloads.azuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fcompliance%2Fuk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Fworkloads.azuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fguidance-uk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Fworkloads.azuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fcompliance%2Fuk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Fworkloads.azuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png"/>
 </a>
 
@@ -475,7 +475,7 @@ troubleshooting** blade.
 9. Check Azure portal notification for a message that the stage of deployment is complete and move on to the next if completed.
 10. If for some reason your deployment fails. To avoid incurring cost and orphan resources it is advisable to delete the resource group in its entirety, fix the issue and redeploy the resource groups and template.
 
-![alt text](/images/create-official-workload-rg.JPG?raw=true "Create ADDS deployment").
+![alt text](images/create-official-workload-rg.JPG?raw=true "Create ADDS deployment").
 
 
 
