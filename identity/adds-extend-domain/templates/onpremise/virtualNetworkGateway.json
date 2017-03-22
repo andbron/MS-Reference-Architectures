@@ -17,7 +17,7 @@
   },
   "variables": {
     "templateUniqueString": "[uniqueString(concat(string(parameters('deploymentContext')), string(parameters('virtualNetworkSettings')), string(parameters('virtualNetworkGatewaySettings'))))]",
-    "virtualNetworkGatewayTemplate": "https://raw.githubusercontent.com/mspnp/template-building-blocks/master/templates/resources/Microsoft.Network/virtualNetworkGateways/virtualNetworkGateway.json",
+    "virtualNetworkGatewayTemplate": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Network/virtualNetworkGateways/virtualNetworkGateway.json",
     "virtualNetworkGatewayDeploymentName": "[concat(parameters('deploymentContext').parentTemplateUniqueString, '-deployGW-', variables('templateUniqueString'))]"
   },
   "resources": [

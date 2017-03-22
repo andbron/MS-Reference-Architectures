@@ -4,7 +4,7 @@ NETWORK_RESOURCE_GROUP_NAME="ra-public-dmz-network-rg"
 WORKLOAD_RESOURCE_GROUP_NAME="ra-public-dmz-wl-rg"
 LOCATION="centralus"
 
-BUILDINGBLOCKS_ROOT_URI=${BUILDINGBLOCKS_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/master/"}
+BUILDINGBLOCKS_ROOT_URI=${BUILDINGBLOCKS_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/"}
 # Make sure we have a trailing slash
 [[ "${BUILDINGBLOCKS_ROOT_URI}" != */ ]] && BUILDINGBLOCKS_ROOT_URI="${BUILDINGBLOCKS_ROOT_URI}/"
 

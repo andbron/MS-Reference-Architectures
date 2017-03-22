@@ -3,7 +3,7 @@
 RESOURCE_GROUP_NAME="ra-hybrid-vpn-rg"
 LOCATION="centralus"
 
-TEMPLATE_ROOT_URI=${TEMPLATE_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/master/"}
+TEMPLATE_ROOT_URI=${TEMPLATE_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/"}
 # Make sure we have a trailing slash
 [[ "${TEMPLATE_ROOT_URI}" != */ ]] && TEMPLATE_ROOT_URI="${TEMPLATE_ROOT_URI}/"
 

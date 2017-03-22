@@ -13,9 +13,9 @@
               "type": "DSC",
               "typeHandlerVersion": "2.19",
               "autoUpgradeMinorVersion": false,
-              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/master/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
+              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
               "settingsConfig": {
-                "modulesURL": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/guidance-compute-n-tier-sql/extensions/CreateFailoverCluster.ps1.zip",
+                "modulesURL": "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/guidance-compute-n-tier-sql/extensions/CreateFailoverCluster.ps1.zip",
                 "configurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
                 "properties": {
                   "domainName": "contoso.com",

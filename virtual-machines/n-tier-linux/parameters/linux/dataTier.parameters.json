@@ -44,7 +44,7 @@
         "extensions": [
           {
             "name": "ra-ntier-install-cassandra-ext",
-            "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/guidance-compute-n-tier/extensions/linux/cassandra-mapper.json",
+            "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/guidance-compute-n-tier/extensions/linux/cassandra-mapper.json",
             "publisher": "Microsoft.OSTCExtensions",
             "type": "CustomScriptForLinux",
             "typeHandlerVersion": "1.5",
