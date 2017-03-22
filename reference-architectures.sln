@@ -3,31 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-compute-multi-vm", "guidance-compute-multi-vm\guidance-compute-multi-vm.deployproj", "{58119F1A-4CF6-46F9-AD16-444E3B873F03}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-compute-multi-vm", "virtual-machines\multi-vm\guidance-compute-multi-vm.deployproj", "{58119F1A-4CF6-46F9-AD16-444E3B873F03}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-compute-single-vm", "guidance-compute-single-vm\guidance-compute-single-vm.deployproj", "{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-compute-ntier-cassandra", "virtual-machines\n-tier-linux\guidance-compute-ntier-cassandra.deployproj", "{37BD5438-1465-443B-8826-A112CCA2E409}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-compute-ntier-cassandra", "guidance-compute-n-tier\guidance-compute-ntier-cassandra.deployproj", "{37BD5438-1465-443B-8826-A112CCA2E409}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-compute-n-tier-sql", "virtual-machines\n-tier-windows\guidance-compute-n-tier-sql.deployproj", "{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-er", "guidance-hybrid-network-er\guidance-hybrid-network-er.deployproj", "{334ED53A-1F21-48E3-BB52-1B96E4A49592}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-compute-single-vm", "virtual-machines\single-vm\guidance-compute-single-vm.deployproj", "{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-secure-vnet", "guidance-hybrid-network-secure-vnet\guidance-hybrid-network-secure-vnet.deployproj", "{5B5343CE-CAFF-42CF-893D-CABCC55858BB}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-er", "hybrid-networking\expressroute\guidance-hybrid-network-er.deployproj", "{334ED53A-1F21-48E3-BB52-1B96E4A49592}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-vpn", "guidance-hybrid-network-vpn\guidance-hybrid-network-vpn.deployproj", "{832CB7C6-CECA-424E-A82A-FAA4C342FD85}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-secure-vnet", "dmz\secure-vnet-hybrid\guidance-hybrid-network-secure-vnet.deployproj", "{5B5343CE-CAFF-42CF-893D-CABCC55858BB}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-vpn-er", "guidance-hybrid-network-vpn-er\guidance-hybrid-network-vpn-er.deployproj", "{CFEB9DA3-A1F6-495D-8027-D58CBE1BD4CD}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-secure-vnet-dmz", "dmz\secure-vnet-dmz\guidance-hybrid-network-secure-vnet-dmz.deployproj", "{004E8121-2B17-4946-B8E8-11B0C8642FD7}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-ra-identity-adds", "guidance-ra-identity-adds\guidance-ra-identity-adds.deployproj", "{6830B0FF-579F-401B-BD53-7444230653F7}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-vpn", "hybrid-networking\vpn\guidance-hybrid-network-vpn.deployproj", "{832CB7C6-CECA-424E-A82A-FAA4C342FD85}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-secure-vnet-dmz", "guidance-hybrid-network-secure-vnet-dmz\guidance-hybrid-network-secure-vnet-dmz.deployproj", "{004E8121-2B17-4946-B8E8-11B0C8642FD7}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-hybrid-network-vpn-er", "hybrid-networking\expressroute-vpn-failover\guidance-hybrid-network-vpn-er.deployproj", "{CFEB9DA3-A1F6-495D-8027-D58CBE1BD4CD}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-compute-n-tier-sql", "guidance-compute-n-tier-sql\guidance-compute-n-tier-sql.deployproj", "{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-identity-aad", "identity\azure-ad\guidance-identity-aad.deployproj", "{A4D8B97A-55F9-44E5-8E04-EBFAB0B43B37}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-identity-aad", "guidance-identity-aad\guidance-identity-aad.deployproj", "{A4D8B97A-55F9-44E5-8E04-EBFAB0B43B37}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-identity-adds-trust", "identity\adds-forest\guidance-identity-adds-trust.deployproj", "{ACE13399-143A-4837-A0A0-99097658589B}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-identity-adfs", "guidance-identity-adfs\guidance-identity-adfs.deployproj", "{3C0939C7-004C-4157-B461-308CA8426BF2}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-identity-adfs", "identity\adfs\guidance-identity-adfs.deployproj", "{3C0939C7-004C-4157-B461-308CA8426BF2}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-identity-adds-trust", "guidance-identity-adds-trust\guidance-identity-adds-trust.deployproj", "{ACE13399-143A-4837-A0A0-99097658589B}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "guidance-ra-identity-adds", "identity\adds-extend-domain\guidance-ra-identity-adds.deployproj", "{6830B0FF-579F-401B-BD53-7444230653F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,14 +39,18 @@ Global
 		{58119F1A-4CF6-46F9-AD16-444E3B873F03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58119F1A-4CF6-46F9-AD16-444E3B873F03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58119F1A-4CF6-46F9-AD16-444E3B873F03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{37BD5438-1465-443B-8826-A112CCA2E409}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{37BD5438-1465-443B-8826-A112CCA2E409}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37BD5438-1465-443B-8826-A112CCA2E409}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37BD5438-1465-443B-8826-A112CCA2E409}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7B33AE1-E56A-458D-93FB-D06DDB93CD7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{334ED53A-1F21-48E3-BB52-1B96E4A49592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{334ED53A-1F21-48E3-BB52-1B96E4A49592}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{334ED53A-1F21-48E3-BB52-1B96E4A49592}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -55,6 +59,10 @@ Global
 		{5B5343CE-CAFF-42CF-893D-CABCC55858BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B5343CE-CAFF-42CF-893D-CABCC55858BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B5343CE-CAFF-42CF-893D-CABCC55858BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{004E8121-2B17-4946-B8E8-11B0C8642FD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{004E8121-2B17-4946-B8E8-11B0C8642FD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{004E8121-2B17-4946-B8E8-11B0C8642FD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{004E8121-2B17-4946-B8E8-11B0C8642FD7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{832CB7C6-CECA-424E-A82A-FAA4C342FD85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{832CB7C6-CECA-424E-A82A-FAA4C342FD85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{832CB7C6-CECA-424E-A82A-FAA4C342FD85}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -63,30 +71,22 @@ Global
 		{CFEB9DA3-A1F6-495D-8027-D58CBE1BD4CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFEB9DA3-A1F6-495D-8027-D58CBE1BD4CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFEB9DA3-A1F6-495D-8027-D58CBE1BD4CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6830B0FF-579F-401B-BD53-7444230653F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6830B0FF-579F-401B-BD53-7444230653F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6830B0FF-579F-401B-BD53-7444230653F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6830B0FF-579F-401B-BD53-7444230653F7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{004E8121-2B17-4946-B8E8-11B0C8642FD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{004E8121-2B17-4946-B8E8-11B0C8642FD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{004E8121-2B17-4946-B8E8-11B0C8642FD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{004E8121-2B17-4946-B8E8-11B0C8642FD7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{96388C9F-BCE8-4FE4-9FB8-BA5A4135FA35}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A4D8B97A-55F9-44E5-8E04-EBFAB0B43B37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4D8B97A-55F9-44E5-8E04-EBFAB0B43B37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4D8B97A-55F9-44E5-8E04-EBFAB0B43B37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4D8B97A-55F9-44E5-8E04-EBFAB0B43B37}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C0939C7-004C-4157-B461-308CA8426BF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C0939C7-004C-4157-B461-308CA8426BF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C0939C7-004C-4157-B461-308CA8426BF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C0939C7-004C-4157-B461-308CA8426BF2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ACE13399-143A-4837-A0A0-99097658589B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ACE13399-143A-4837-A0A0-99097658589B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACE13399-143A-4837-A0A0-99097658589B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACE13399-143A-4837-A0A0-99097658589B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C0939C7-004C-4157-B461-308CA8426BF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C0939C7-004C-4157-B461-308CA8426BF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C0939C7-004C-4157-B461-308CA8426BF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C0939C7-004C-4157-B461-308CA8426BF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6830B0FF-579F-401B-BD53-7444230653F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6830B0FF-579F-401B-BD53-7444230653F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6830B0FF-579F-401B-BD53-7444230653F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6830B0FF-579F-401B-BD53-7444230653F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
