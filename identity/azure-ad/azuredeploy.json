@@ -4,14 +4,14 @@
   "parameters": {
     "templateRootUri": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/mspnp/template-building-blocks/master/",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/",
       "metadata": {
         "description": "Root path for templates"
       }
     },
     "parameterRootUri": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/guidance-identity-aad/parameters/",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/guidance-identity-aad/parameters/",
       "metadata": {
         "decription": "Root path for parameters"
       }

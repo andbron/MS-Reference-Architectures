@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 
 $buildingBlocksRootUriString = $env:TEMPLATE_ROOT_URI
 if ($buildingBlocksRootUriString -eq $null) {
-  $buildingBlocksRootUriString = "https://raw.githubusercontent.com/mspnp/template-building-blocks/master/"
+  $buildingBlocksRootUriString = "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/"
 }
 
 if (![System.Uri]::IsWellFormedUriString($buildingBlocksRootUriString, [System.UriKind]::Absolute)) {

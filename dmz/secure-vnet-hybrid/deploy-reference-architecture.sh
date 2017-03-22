@@ -3,7 +3,7 @@
 RESOURCE_GROUP_NAME="ra-private-dmz-rg"
 LOCATION="centralus"
 
-BUILDINGBLOCKS_ROOT_URI=${BUILDINGBLOCKS_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/master/"}
+BUILDINGBLOCKS_ROOT_URI=${BUILDINGBLOCKS_ROOT_URI:="https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/"}
 # Make sure we have a trailing slash
 [[ "${BUILDINGBLOCKS_ROOT_URI}" != */ ]] && BUILDINGBLOCKS_ROOT_URI="${BUILDINGBLOCKS_ROOT_URI}/"
 
