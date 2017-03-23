@@ -11,7 +11,7 @@
     },
     "parameterRootUri": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/",
       "metadata": {
         "decription": "Root path for parameters"
       }
@@ -27,14 +27,14 @@
         "availabilitySet": "[concat(parameters('templateRootUri'), 'templates/resources/Microsoft.Compute/virtualMachines/availabilitySet-new.json')]"
       },
       "parameter": {
-        "virtualNetwork": "[concat(parameters('parameterRootUri'), 'guidance-compute-n-tier/parameters/linux/virtualNetwork.parameters.json')]",
-        "networkSecurityGroup": "[concat(parameters('parameterRootUri'), 'guidance-compute-n-tier/parameters/linux/networkSecurityGroups.parameters.json')]",
-        "webTier": "[concat(parameters('parameterRootUri'), 'guidance-compute-n-tier/parameters/linux/webTier.parameters.json')]",
-        "dataTier": "[concat(parameters('parameterRootUri'), 'guidance-compute-n-tier/parameters/linux/dataTier.parameters.json')]",
-        "businessTier": "[concat(parameters('parameterRootUri'), 'guidance-compute-n-tier/parameters/linux/businessTier.parameters.json')]",
-        "managementTierJumpbox": "[concat(parameters('parameterRootUri'), 'guidance-compute-n-tier/parameters/linux/managementTierJumpbox.parameters.json')]",
-        "availabilitySet": "[concat(parameters('parameterRootUri'), 'guidance-compute-n-tier/parameters/linux/availabilitySet.parameters.json')]",
-        "managementTierOps": "[concat(parameters('parameterRootUri'), 'guidance-compute-n-tier/parameters/linux/managementTierOps.parameters.json')]"
+        "virtualNetwork": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/virtualNetwork.parameters.json')]",
+        "networkSecurityGroup": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/networkSecurityGroups.parameters.json')]",
+        "webTier": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/webTier.parameters.json')]",
+        "dataTier": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/dataTier.parameters.json')]",
+        "businessTier": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/businessTier.parameters.json')]",
+        "managementTierJumpbox": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/managementTierJumpbox.parameters.json')]",
+        "availabilitySet": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/availabilitySet.parameters.json')]",
+        "managementTierOps": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/managementTierOps.parameters.json')]"
       }
     }
   },

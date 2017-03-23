@@ -70,7 +70,7 @@
             "autoUpgradeMinorVersion": false,
             "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
             "settingsConfig": {
-              "modulesURL": "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/guidance-compute-n-tier-sql/extensions/CreateFileShareWitness.ps1.zip",
+              "modulesURL": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/virtual-machines/n-tier-windows/extensions/CreateFileShareWitness.ps1.zip",
               "configurationFunction": "CreateFileShareWitness.ps1\\CreateFileShareWitness",
               "properties": {
                 "domainName": "contoso.com",

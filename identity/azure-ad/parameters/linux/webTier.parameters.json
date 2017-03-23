@@ -105,7 +105,7 @@
             "typeHandlerVersion": "1.5",
             "autoUpgradeMinorVersion": true,
             "settingsConfig": {
-              "fileUris": [ "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/guidance-identity-aad/extensions/linux/install-apache.sh" ],
+              "fileUris": [ "https://raw.githubusercontent.com/mspnp/reference-architectures/master/identity/azure-ad/extensions/linux/install-apache.sh" ],
               "commandToExecute": "sh install-apache.sh"
             },
             "protectedSettingsConfig": { }

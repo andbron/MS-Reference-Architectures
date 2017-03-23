@@ -31,7 +31,7 @@
               "type": "CustomScriptExtension",
               "typeHandlerVersion": "1.8",
               "autoUpgradeMinorVersion": false,
-              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/guidance-identity-aad/templates/onpremise/adds-domain-controller-extension-settings-mapper.json",
+              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/identity/azure-ad/templates/onpremise/adds-domain-controller-extension-settings-mapper.json",
               "settingsConfig": {
                 "activeDirectorySettings": {
                   "domainName": "contoso.com",
@@ -41,7 +41,7 @@
                   "safeModePassword": "Saf3M0de@PW"
                 },
                 "fileUris": [
-                  "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/guidance-identity-aad/extensions/adds.ps1"
+                  "https://raw.githubusercontent.com/mspnp/reference-architectures/master/identity/azure-ad/extensions/adds.ps1"
                 ]
               },
               "protectedSettingsConfig": {

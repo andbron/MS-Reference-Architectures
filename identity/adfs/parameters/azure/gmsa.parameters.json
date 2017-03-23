@@ -13,7 +13,7 @@
               "type": "CustomScriptExtension",
               "typeHandlerVersion": "1.8",
               "autoUpgradeMinorVersion": false,
-              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/guidance-identity-adfs/templates/onpremise/gmsa-extension-settings-mapper.json",
+              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/identity/adfs/templates/onpremise/gmsa-extension-settings-mapper.json",
               "settingsConfig": {
                 "activeDirectorySettings": {
                   "adminUser": "testuser",
@@ -26,7 +26,7 @@
                   "hostIp": "10.0.5.30"
                 },
                 "fileUris": [
-                  "https://raw.githubusercontent.com/mspnp/reference-architectures/v1.0.0/guidance-identity-adfs/extensions/gmsa.ps1"
+                  "https://raw.githubusercontent.com/mspnp/reference-architectures/master/identity/adfs/extensions/gmsa.ps1"
                 ]
               },
               "protectedSettingsConfig": {
