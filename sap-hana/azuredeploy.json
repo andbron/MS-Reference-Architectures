@@ -1,0 +1,86 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "templateRootUri": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/",
+      "metadata": {
+        "description": "Root path for templates"
+      }
+    },
+    "parameterRootUri": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/hybrid-networking/vpn/parameters/",
+      "metadata": {
+        "decription": "Root path for parameters"
+      }
+    }
+  },
+  "variables": {
+    "templates": {
+      "deployment": {
+        "virtualNetwork": "[uri(parameters('templateRootUri'), 'templates/buildingBlocks/vnet-n-subnet/azuredeploy.json')]",
+        "virtualNetworkGateway": "[uri(parameters('templateRootUri'), 'templates/buildingBlocks/vpn-gateway-vpn-connection/azuredeploy.json')]",
+        "virtualMachine": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/multi-vm-n-nic-m-storage/azuredeploy.json')]"
+      },
+      "parameter": {
+        "virtualNetwork": "[uri(parameters('parameterRootUri'), 'virtualNetwork.parameters.json')]",
+        "virtualNetworkGateway": "[uri(parameters('parameterRootUri'), 'virtualNetworkGateway.parameters.json')]",
+        "managementTierJumpbox": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/managementTierJumpbox.parameters.json')]"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sap-hana-vnet-deployment",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.virtualNetwork]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.virtualNetwork]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sap-hana-vpn-deployment",
+      "dependsOn": [
+        "ra-sap-hana-vnet-deployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.virtualNetworkGateway]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.virtualNetworkGateway]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sap-hana-mgmt-jb-deployment",
+      "dependsOn": [
+        "ra-sap-hana-vnet-deployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.virtualMachine]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.managementTierJumpbox]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

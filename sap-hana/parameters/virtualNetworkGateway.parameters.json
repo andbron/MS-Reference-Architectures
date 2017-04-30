@@ -1,0 +1,35 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkSettings": {
+      "value": {
+        "name": "ra-sap-hana-vnet",
+        "resourceGroup": "ra-sap-hana-rg"
+      }
+    },
+    "virtualNetworkGatewaySettings": {
+      "value": {
+        "name": "ra-sap-hana-vgw",
+        "gatewayType": "Vpn",
+        "vpnType": "RouteBased",
+        "sku": "Standard"
+      }
+    },
+    "connectionSettings": {
+      "value": {
+        "name": "ra-sap-hana-cn",
+        "connectionType": "IPsec",
+        "sharedKey": "123secret",
+        "virtualNetworkGateway1": {
+          "name": "ra-sap-hana-vgw"
+        },
+        "localNetworkGateway": {
+          "name": "ra-sap-hana-lgw",
+          "ipAddress": "40.50.60.70",
+          "addressPrefixes": [ "192.168.0.0/16" ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,75 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachinesSettings": {
+      "value": {
+        "namePrefix": "ra-sap-data",
+        "computerNamePrefix": "hana-db",
+        "size": "Standard_GS5",
+        "adminUsername": "testuser",
+        "adminPassword": "AweS0me@PW",
+        "osType": "linux",
+        "osAuthenticationType": "password",
+        "sshPublicKey": "",
+        "nics": [
+          {
+            "isPublic": "false",
+            "isPrimary": "true",
+            "subnetName": "SAPDataSubnet",
+            "privateIPAllocationMethod": "dynamic",
+            "publicIPAllocationMethod": "static",
+            "enableIPForwarding": false,
+            "domainNameLabelPrefix": "",
+            "dnsServers": []
+          },
+          {
+            "isPublic": "false",
+            "isPrimary": "false",
+            "subnetName": "SAPDataSubnet",
+            "privateIPAllocationMethod": "dynamic",
+            "publicIPAllocationMethod": "static",
+            "enableIPForwarding": false,
+            "domainNameLabelPrefix": "",
+            "dnsServers": []
+          }
+        ],
+        "imageReference": {
+          "publisher": "SUSE",
+          "offer": "SLES-Priority",
+          "sku": "12-SP2",
+          "version": "latest"
+        },
+        "dataDisks": {
+          "count": 2,
+          "properties": {
+            "diskSizeGB": 1023,
+            "caching": "None",
+            "createOption": "Empty"
+          }
+        },
+        "osDisk": {
+          "caching": "ReadWrite"
+        },
+        "extensions": [],
+        "availabilitySet": {
+          "useExistingAvailabilitySet": "No",
+          "name": ""
+        }
+      }
+    },
+    "virtualNetworkSettings": {
+      "value": {
+        "name": "ra-sap-hana-vnet",
+        "resourceGroup": "ra-sap-hana-rg"
+      }
+    },
+    "buildingBlockSettings": {
+      "value": {
+        "storageAccountsCount": 1,
+        "vmCount": 1,
+        "vmStartIndex": 1
+      }
+    }
+  }
+}

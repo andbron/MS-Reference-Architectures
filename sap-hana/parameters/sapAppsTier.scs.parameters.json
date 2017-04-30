@@ -1,0 +1,116 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "loadBalancerSettings": {
+      "value": {
+        "name": "ra-sap-apps-scs-lb",
+        "frontendIPConfigurations": [
+          {
+            "name": "ra-sap-apps-scs-lb-fe-config1",
+            "loadBalancerType": "internal",
+            "domainNameLabel": "",
+            "internalLoadBalancerSettings": {
+              "privateIPAddress": "10.0.1.249",
+              "subnetName": "SAPAppsSubnet"
+            }
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "lbr1",
+            "frontendPort": 80,
+            "backendPort": 80,
+            "protocol": "Tcp",
+            "backendPoolName": "lb-bep1",
+            "frontendIPConfigurationName": "ra-sap-apps-scs-lb-fe-config1",
+            "probeName": "lbp1",
+            "enableFloatingIP": false
+          }
+        ],
+        "probes": [
+          {
+            "name": "lbp1",
+            "port": 80,
+            "protocol": "Http",
+            "requestPath": "/"
+          }
+        ],
+        "backendPools": [
+          {
+            "name": "lb-bep1",
+            "nicIndex": 0
+          }
+        ],
+        "inboundNatRules": []
+      }
+    },
+    "virtualMachinesSettings": {
+      "value": {
+        "namePrefix": "ra-sapApps-scs",
+        "computerNamePrefix": "sapAppsScs",
+        "size": "Standard_DS11_v2",
+        "adminUsername": "testuser",
+        "adminPassword": "AweS0me@PW",
+        "osType": "windows",
+        "osAuthenticationType": "password",
+        "sshPublicKey": "",
+        "nics": [
+          {
+            "isPublic": "false",
+            "isPrimary": "true",
+            "subnetName": "SAPAppsSubnet",
+            "privateIPAllocationMethod": "dynamic",
+            "enableIPForwarding": false,
+            "domainNameLabelPrefix": "",
+            "dnsServers": []
+          },
+          {
+            "isPublic": "false",
+            "isPrimary": "false",
+            "subnetName": "MgmtSubnet",
+            "privateIPAllocationMethod": "dynamic",
+            "enableIPForwarding": false,
+            "domainNameLabelPrefix": "",
+            "dnsServers": []
+          }
+        ],
+        "imageReference": {
+          "publisher": "MicrosoftWindowsServer",
+          "offer": "WindowsServer",
+          "sku": "2012-R2-Datacenter",
+          "version": "latest"
+        },
+        "dataDisks": {
+          "count": 1,
+          "properties": {
+            "diskSizeGB": 1023,
+            "caching": "None",
+            "createOption": "Empty"
+          }
+        },
+        "osDisk": {
+          "caching": "ReadWrite"
+        },
+        "extensions": [],
+        "availabilitySet": {
+          "useExistingAvailabilitySet": "No",
+          "name": "ra-sap-apps-scs-as"
+        }
+      }
+    },
+    "virtualNetworkSettings": {
+      "value": {
+        "name": "ra-sap-hana-vnet",
+        "resourceGroup": "ra-sap-hana-rg"
+      }
+    },
+    "buildingBlockSettings": {
+      "value": {
+        "storageAccountsCount": 2,
+        "vmCount": 2,
+        "vmStartIndex": 1
+      }
+    }
+  }
+}
