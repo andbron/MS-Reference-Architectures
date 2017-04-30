@@ -1,0 +1,155 @@
+﻿{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkSettings": {
+      "value": {
+        "name": "ra-sp2016-vnet",
+        "resourceGroup": "ra-sp2016-network-rg"
+      }
+    },
+    "networkSecurityGroupsSettings": {
+      "value": [
+        {
+          "name": "ra-sp2016-ad-nsg",
+          "subnets": [
+            "ad"
+          ],
+          "networkInterfaces": [
+          ],
+          "securityRules": [
+          ]
+        },
+        {
+          "name": "ra-sp2016-sql-nsg",
+          "subnets": [
+            "sql"
+          ],
+          "networkInterfaces": [
+          ],
+          "securityRules": [
+            {
+              "name": "allow-traffic-from-web",
+              "description": "Allow traffic originating from Web tier.",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1433",
+              "sourceAddressPrefix": "10.0.1.0/24",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            },
+            {
+              "name": "allow-traffic-from-app",
+              "description": "Allow traffic originating from Application tier.",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1433",
+              "sourceAddressPrefix": "10.0.2.0/24",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            },
+            {
+              "name": "allow-mgmt-rdp",
+              "direction": "Inbound",
+              "priority": 110,
+              "sourceAddressPrefix": "10.0.0.128/25",
+              "destinationAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "access": "Allow",
+              "protocol": "Tcp"
+            },
+            {
+              "name": "deny-other-traffic",
+              "description": "Deny all other traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 120,
+              "direction": "Inbound"
+            }
+          ]
+        },
+        {
+          "name": "ra-sp2016-svca-nsg",
+          "subnets": [
+            "web"
+          ],
+          "networkInterfaces": [
+          ],
+          "securityRules": [
+          ]
+        },
+        {
+          "name": "ra-sp2016-svcb-nsg",
+          "subnets": [
+            "cache"
+          ],
+          "networkInterfaces": [
+          ],
+          "securityRules": [
+          ]
+        },
+        {
+          "name": "ra-sp2016-svcc-nsg",
+          "subnets": [
+            "app"
+          ],
+          "networkInterfaces": [
+          ],
+          "securityRules": [
+          ]
+        },
+        {
+          "name": "ra-sp2016-svcd-nsg",
+          "subnets": [
+            "search"
+          ],
+          "networkInterfaces": [
+          ],
+          "securityRules": [
+          ]
+        },        {
+          "name": "ra-sp2016-mgmt-nsg",
+          "subnets": [ ],
+          "networkInterfaces": [
+            "ra-sp2016-jb-vm1-nic1"
+          ],
+          "securityRules": [
+            {
+              "name": "default-allow-rdp",
+              "description": "Allow RDP Subnet",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            },
+            {
+              "name": "deny-other-traffic",
+              "description": "Deny all other traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 120,
+              "direction": "Inbound"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
