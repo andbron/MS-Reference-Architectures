@@ -6,7 +6,7 @@
       "value": {
         "name": "ra-onprem-cn",
         "connectionType": "Vnet2Vnet",
-        "sharedKey": "123secret",
+        "sharedKey": "",
         "virtualNetworkGateway1": {
           "name": "ra-onprem-vpn-vgw",
           "resourceGroup": "ra-onprem-rg"

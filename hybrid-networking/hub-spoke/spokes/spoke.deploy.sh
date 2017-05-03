@@ -32,14 +32,31 @@ echo "Using ${BUILDINGBLOCKS_ROOT_URI} to locate templates"
 echo "scripts=${SCRIPT_DIR}"
 echo
 
-UDR_TEMPLATE_URI="${BUILDINGBLOCKS_ROOT_URI}templates/buildingBlocks/userDefinedRoutes/azuredeploy.json"
+VIRTUAL_NETWORK_TEMPLATE_URI="${BUILDINGBLOCKS_ROOT_URI}templates/buildingBlocks/vnet-n-subnet/azuredeploy.json"
+LB_TEMPLATE_URI="${BUILDINGBLOCKS_ROOT_URI}templates/buildingBlocks/loadBalancer-backend-n-vm/azuredeploy.json"
 
-SPOKE_UDR_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.udr.parameters.json"
+PEERING_TEMPLATE_FILE="${SCRIPT_DIR}/spoke.peering.azuredeploy.json"
+
+SPOKE_VNET_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.virtualNetwork.parameters.json"
+SPOKE_WEB_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.web.parameters.json"
+SPOKE_PEERING_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.peering.parameters.json"
 
 azure config mode arm
 
-# Create the UDR
-echo "Deploying UDR for Spoke${SPOKE}..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-udr-deployment" \
---template-uri $UDR_TEMPLATE_URI --parameters-file $SPOKE_UDR_PARAMETERS_FILE \
+# Create the VNet
+echo "Deploying VNet for Spoke${SPOKE}..."
+azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-deployment" \
+--template-uri $VIRTUAL_NETWORK_TEMPLATE_URI --parameters-file $SPOKE_VNET_PARAMETERS_FILE \
+--subscription $SUBSCRIPTION_ID || exit 1
+
+# Create the peering connection
+echo "Deploying VNet peering for Spoke${SPOKE}..."
+azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-peering-deployment" \
+--template-file $PEERING_TEMPLATE_FILE --parameters-file $SPOKE_PEERING_PARAMETERS_FILE \
+--subscription $SUBSCRIPTION_ID || exit 1
+
+# Create the load balanced VMs connection
+echo "Deploying load balanced VMs for Spoke${SPOKE}..."
+azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-peering-deployment" \
+--template-uri $LB_TEMPLATE_URI --parameters-file $SPOKE_WEB_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1

@@ -20,7 +20,7 @@
       "value": {
         "name": "ra-hub-vpn-cn",
         "connectionType": "Vnet2Vnet",
-        "sharedKey": "123secret",
+        "sharedKey": "",
         "virtualNetworkGateway1": {
           "name": "ra-hub-vpn-vgw",
           "resourceGroup": "ra-hub-rg"

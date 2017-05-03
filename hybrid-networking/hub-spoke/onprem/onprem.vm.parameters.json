@@ -8,8 +8,8 @@
         "computerNamePrefix": "onpremjumpbox",
         "size": "Standard_DS1_v2",
         "osType": "linux",
-        "adminUsername": "testuser",
-        "adminPassword": "AweS0me@PW",
+        "adminUsername": "",
+        "adminPassword": "",
         "osAuthenticationType": "password",
         "nics": [
           {
