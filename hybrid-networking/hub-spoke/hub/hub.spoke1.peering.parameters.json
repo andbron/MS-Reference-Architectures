@@ -1,0 +1,15 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "ra-hub-vnet/hub-spoke1-peer"
+    },
+    "spokeResourceGroup": {
+      "value": "ra-spoke1-rg"
+    },
+    "spokeVnetName": {
+      "value": "ra-spoke1-vnet"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetworkSettings": {
+            "value": {
+                "name": "ra-spoke1-vnet",
+                "resourceGroup": "ra-spoke1-rg"
+            }
+        },
+        "routeTableSettings": {
+            "value": [
+                {
+                    "name": "ra-spoke1-rt",
+                    "subnets": [
+                        "web"
+                    ],
+                    "routes": [
+                        {
+                            "name": "toSpoke2",
+                            "addressPrefix": "10.1.2.0/24",
+                            "nextHopType": "VirtualNetworkGateway"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

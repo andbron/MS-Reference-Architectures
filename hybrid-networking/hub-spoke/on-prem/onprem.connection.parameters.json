@@ -1,0 +1,21 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "connectionSettings": {
+      "value": {
+        "name": "ra-onprem-cn",
+        "connectionType": "Vnet2Vnet",
+        "sharedKey": "123secret",
+        "virtualNetworkGateway1": {
+          "name": "ra-onprem-vpn-vgw",
+          "resourceGroup": "ra-onprem-rg"
+        },
+        "virtualNetworkGateway2": {
+          "name": "ra-hub-vpn-vgw",
+          "resourceGroup": "ra-hub-rg"
+        }
+      }
+    }
+  }
+}

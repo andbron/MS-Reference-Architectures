@@ -1,0 +1,21 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkSettings": {
+      "value": {
+        "name": "ra-spoke2-vnet",
+        "addressPrefixes": [
+          "10.1.2.0/24"
+        ],
+        "subnets": [
+          {
+            "name": "web",
+            "addressPrefix": "10.1.2.32/27"
+          }
+        ],
+        "dnsServers": [ ]
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkSettings": {
+      "value": {
+        "name": "ra-onprem-vnet",
+        "addressPrefixes": [
+          "192.168.0.0/16"
+        ],
+        "subnets": [
+          {
+            "name": "GatewaySubnet",
+            "addressPrefix": "192.168.255.224/27"
+          },
+          {
+            "name": "cloud-access-point",
+            "addressPrefix": "192.168.255.192/27"
+          },
+          {
+            "name": "default",
+            "addressPrefix": "192.168.1.0/24"
+          }
+        ],
+        "dnsServers": [ ]
+      }
+    }
+  }
+}

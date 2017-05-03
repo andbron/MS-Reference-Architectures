@@ -1,0 +1,35 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkSettings": {
+      "value": {
+        "name": "ra-hub-vnet",
+        "resourceGroup": "ra-hub-rg"
+      }
+    },
+    "virtualNetworkGatewaySettings": {
+      "value": {
+        "name": "ra-hub-vpn-vgw",
+        "gatewayType": "Vpn",
+        "vpnType": "RouteBased",
+        "sku": "HighPerformance"
+      }
+    },
+    "connectionSettings": {
+      "value": {
+        "name": "ra-hub-vpn-cn",
+        "connectionType": "Vnet2Vnet",
+        "sharedKey": "123secret",
+        "virtualNetworkGateway1": {
+          "name": "ra-hub-vpn-vgw",
+          "resourceGroup": "ra-hub-rg"
+        },
+        "virtualNetworkGateway2": {
+          "name": "ra-onprem-vpn-vgw",
+          "resourceGroup": "ra-onprem-rg"
+        }
+      }
+    }
+  }
+}

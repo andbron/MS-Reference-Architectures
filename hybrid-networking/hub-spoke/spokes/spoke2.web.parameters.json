@@ -1,0 +1,116 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "loadBalancerSettings": {
+      "value": {
+        "name": "ra-spoke2-web-lb",
+        "frontendIPConfigurations": [
+          {
+            "name": "ra-spoke2-web-lb-fe-config1",
+            "loadBalancerType": "internal",
+            "domainNameLabel": "",
+            "internalLoadBalancerSettings": {
+                "privateIPAddress":"10.1.2.40",
+                "subnetName":"web"
+             }
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "lbr1",
+            "frontendPort": 80,
+            "backendPort": 80,
+            "protocol": "Tcp",
+            "backendPoolName": "lb-bep1",
+            "frontendIPConfigurationName": "ra-spoke2-web-lb-fe-config1",
+            "probeName": "lbp1",
+            "enableFloatingIP": false
+          }
+        ],
+        "probes": [
+          {
+            "name": "lbp1",
+            "port": 80,
+            "protocol": "Http",
+            "requestPath": "/"
+          }
+        ],
+        "backendPools": [
+          {
+            "name": "lb-bep1",
+            "nicIndex": 0
+          }
+        ],
+        "inboundNatRules": [ ]
+      }
+    },
+    "virtualMachinesSettings": {
+      "value": {
+        "namePrefix": "ra-spoke2-web",
+        "computerNamePrefix": "s2web",
+        "size": "Standard_DS1",
+        "adminUsername": "testuser",
+        "adminPassword": "AweS0me@PW",
+        "osType": "linux",
+        "osAuthenticationType": "password",
+        "sshPublicKey": "",
+        "nics": [
+          {
+            "isPublic": "false",
+            "isPrimary": "true",
+            "subnetName": "web",
+            "privateIPAllocationMethod": "dynamic",
+            "enableIPForwarding": false,
+            "dnsServers": [ ]
+          }
+        ],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "14.04.5-LTS",
+          "version": "latest"
+        },
+        "osDisk": {
+          "caching": "ReadWrite"
+        },
+        "dataDisks": {
+          "count": 0,
+          "properties": { }
+        },
+        "extensions": [
+          {
+            "name": "apache-config-ext",
+            "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
+            "publisher": "Microsoft.OSTCExtensions",
+            "type": "CustomScriptForLinux",
+            "typeHandlerVersion": "1.5",
+            "autoUpgradeMinorVersion": true,
+            "settingsConfig": {
+              "fileUris": [ "https://raw.githubusercontent.com/mspnp/reference-architectures/master/virtual-machines/multi-vm/extensions/linux/install-apache.sh" ],
+              "commandToExecute": "sh install-apache.sh"
+            },
+            "protectedSettingsConfig": { }
+          }
+        ],
+        "availabilitySet": {
+          "useExistingAvailabilitySet": "No",
+          "name": "ra-spoke2-web-as"
+        }
+      }
+    },
+    "virtualNetworkSettings": {
+      "value": {
+        "name": "ra-spoke2-vnet",
+        "resourceGroup": "ra-spoke2-rg"
+      }
+    },
+    "buildingBlockSettings": {
+      "value": {
+        "storageAccountsCount": 3,
+        "vmCount": 3,
+        "vmStartIndex": 1
+      }
+    }
+  }
+}
