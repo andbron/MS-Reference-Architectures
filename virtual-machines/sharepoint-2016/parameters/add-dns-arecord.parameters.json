@@ -5,7 +5,7 @@
     "virtualMachinesExtensionSettings": {
       "value": [
         {
-          "vms": [ "ra-sp2016-ad-vm1" ],
+          "vms": [ "ra-sp2016-app-vm1" ],
           "extensions": [
             {
               "name": "add-dns-arecord",

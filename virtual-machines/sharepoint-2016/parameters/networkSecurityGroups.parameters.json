@@ -49,7 +49,31 @@
               "sourceAddressPrefix": "10.0.2.0/24",
               "destinationAddressPrefix": "*",
               "access": "Allow",
-              "priority": 100,
+              "priority": 101,
+              "direction": "Inbound"
+            },
+            {
+              "name": "allow-traffic-from-dch",
+              "description": "Allow traffic originating from Web tier.",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1433",
+              "sourceAddressPrefix": "10.0.1.0/24",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 102,
+              "direction": "Inbound"
+            },
+            {
+              "name": "allow-traffic-from-srch",
+              "description": "Allow traffic originating from Application tier.",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "1433",
+              "sourceAddressPrefix": "10.0.2.0/24",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 103,
               "direction": "Inbound"
             },
             {

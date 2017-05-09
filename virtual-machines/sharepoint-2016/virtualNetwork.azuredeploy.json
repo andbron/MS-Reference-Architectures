@@ -32,7 +32,6 @@
         "ad": "[concat(parameters('parameterRootUri'), 'adds/ad.parameters.json')]",
         "adPrimaryExtension": "[concat(parameters('parameterRootUri'), 'adds/create-adds-forest-extension.parameters.json')]",
         "adSecondaryExtension": "[concat(parameters('parameterRootUri'), 'adds/add-adds-domain-controller.parameters.json')]",
-        "vnetDnsUpdate": "[concat(parameters('parameterRootUri'), 'adds/virtualNetwork-adds-dns.parameters.json')]",
         "sqlServers": "[concat(parameters('parameterRootUri'), 'sql.parameters.json')]",
         "sqlFsw": "[concat(parameters('parameterRootUri'), 'fsw.parameters.json')]",
         "sqlAOIaaSExtensions": "[concat(parameters('parameterRootUri'), 'sql-iaas-ao-extensions.parameters.json')]",
@@ -113,27 +112,9 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-sp2016-update-dns",
-      "dependsOn": [
-        "ra-sp2016-ad-deployment"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('templates').deployment.virtualNetwork]"
-        },
-        "parametersLink": {
-          "uri": "[variables('templates').parameter.vnetDnsUpdate]",
-          "contentVersion": "1.0.0.0"
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
       "name": "ra-sp2016-primary-ad-ext",
       "dependsOn": [
-        "ra-sp2016-update-dns"
+        "ra-sp2016-ad-deployment"
       ],
       "properties": {
         "mode": "Incremental",

@@ -17,7 +17,8 @@
             "isPublic": "false",
             "isPrimary": "true",
             "subnetName": "cache",
-            "privateIPAllocationMethod": "dynamic",
+            "privateIPAllocationMethod": "static",
+            "startingIPAddress": "10.0.2.4",
             "enableIPForwarding": false,
             "domainNameLabelPrefix": "",
             "dnsServers": [ ]

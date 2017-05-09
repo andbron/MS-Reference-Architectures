@@ -17,7 +17,8 @@
             "isPublic": "false",
             "isPrimary": "true",
             "subnetName": "app",
-            "privateIPAllocationMethod": "dynamic",
+            "privateIPAllocationMethod": "static",
+            "startingIPAddress": "10.0.5.4",
             "enableIPForwarding": false,
             "domainNameLabelPrefix": "",
             "dnsServers": [ ]
