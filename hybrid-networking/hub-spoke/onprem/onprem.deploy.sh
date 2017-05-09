@@ -38,25 +38,23 @@ ONPREM_VIRTUAL_NETWORK_PARAMETERS_FILE="${SCRIPT_DIR}/onprem.virtualNetwork.para
 ONPREM_VM_PARAMETERS_FILE="${SCRIPT_DIR}/onprem.vm.parameters.json"
 ONPREM_VPN_GW_PARAMETERS_FILE="${SCRIPT_DIR}/onprem.gateway.parameters.json"
 
-azure config mode arm
-
 # Create the resource group for the simulated on-prem environment, saving the output for later.
-ONPREM_NETWORK_RESOURCE_GROUP_OUTPUT=$(azure group create --name $RESOURCE_GROUP_NAME --location $LOCATION --subscription $SUBSCRIPTION_ID --json) || exit 1
+ONPREM_NETWORK_RESOURCE_GROUP_OUTPUT=$(az group create --name $RESOURCE_GROUP_NAME --location $LOCATION --subscription $SUBSCRIPTION_ID --json) || exit 1
 
 # Create the simulated on-prem virtual network
 echo "Deploying on-prem simulated virtual network..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vnet-deployment" \
+az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vnet-deployment" \
 --template-uri $VIRTUAL_NETWORK_TEMPLATE_URI --parameters-file $ONPREM_VIRTUAL_NETWORK_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 # Create the simulated on-prem Ubuntu VM
 echo "Deploying on-prem Ubuntu VM..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vm-deployment" \
+az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vm-deployment" \
 --template-uri $MULTI_VMS_TEMPLATE_URI --parameters-file $ONPREM_VM_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 # Install VPN gateway
 echo "Deploying VPN gateway..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vpn-gw-deployment" \
+az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vpn-gw-deployment" \
 --template-file $ONPREM_VPN_TEMPLATE_FILE --parameters-file $ONPREM_VPN_GW_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1

@@ -31,10 +31,8 @@ echo
 ONPREM_CONNECTION_TEMPLATE_FILE="${SCRIPT_DIR}/onprem.connection.azuredeploy.json"
 ONPREM_CONNECTION_PARAMETERS_FILE="${SCRIPT_DIR}/onprem.connection.parameters.json"
 
-azure config mode arm
-
 # Install VPN connnection to hub
 echo "Deploying VPN conection to hub..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vpn-gw-cn-deployment" \
+az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vpn-gw-cn-deployment" \
 --template-file $ONPREM_CONNECTION_TEMPLATE_FILE --parameters-file $ONPREM_CONNECTION_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1

@@ -36,10 +36,8 @@ UDR_TEMPLATE_URI="${BUILDINGBLOCKS_ROOT_URI}templates/buildingBlocks/userDefined
 
 SPOKE_UDR_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.udr.parameters.json"
 
-azure config mode arm
-
 # Create the UDR
 echo "Deploying UDR for Spoke${SPOKE}..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-udr-deployment" \
+az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-udr-deployment" \
 --template-uri $UDR_TEMPLATE_URI --parameters-file $SPOKE_UDR_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1

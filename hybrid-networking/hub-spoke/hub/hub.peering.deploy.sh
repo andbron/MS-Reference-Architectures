@@ -36,10 +36,8 @@ PEERING_TEMPLATE_FILE="${SCRIPT_DIR}/hub.peering.azuredeploy.json"
 
 SPOKE_PEERING_PARAMETERS_FILE="${SCRIPT_DIR}/hub.spoke${SPOKE}.peering.parameters.json"
 
-azure config mode arm
-
 # Install VNet peering
 echo "Deploying VNet peering..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-hub-spoke${SPOKE}peering-deployment" \
+az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-hub-spoke${SPOKE}peering-deployment" \
 --template-file $PEERING_TEMPLATE_FILE --parameters-file $SPOKE_PEERING_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1

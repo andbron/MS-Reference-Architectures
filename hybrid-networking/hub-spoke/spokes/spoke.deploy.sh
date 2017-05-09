@@ -41,22 +41,20 @@ SPOKE_VNET_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.virtualNetwork.parameter
 SPOKE_WEB_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.web.parameters.json"
 SPOKE_PEERING_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.peering.parameters.json"
 
-azure config mode arm
-
 # Create the VNet
 echo "Deploying VNet for Spoke${SPOKE}..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-deployment" \
+az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-deployment" \
 --template-uri $VIRTUAL_NETWORK_TEMPLATE_URI --parameters-file $SPOKE_VNET_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 # Create the peering connection
 echo "Deploying VNet peering for Spoke${SPOKE}..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-peering-deployment" \
+az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-peering-deployment" \
 --template-file $PEERING_TEMPLATE_FILE --parameters-file $SPOKE_PEERING_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1
 
 # Create the load balanced VMs connection
 echo "Deploying load balanced VMs for Spoke${SPOKE}..."
-azure group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-peering-deployment" \
+az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-peering-deployment" \
 --template-uri $LB_TEMPLATE_URI --parameters-file $SPOKE_WEB_PARAMETERS_FILE \
 --subscription $SUBSCRIPTION_ID || exit 1
