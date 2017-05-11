@@ -16,8 +16,8 @@ $ErrorActionPreference = "Stop"
 $templateRootUriString = $env:TEMPLATE_ROOT_URI
 if ($templateRootUriString -eq $null)
 {
-
-     $templateRootUriString = "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/"
+    # $templateRootUriString = "https://raw.githubusercontent.com/pstork/template-building-blocks/pstork/SharePoint2016/"
+    $templateRootUriString = "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/"
 }
 
 if (![System.Uri]::IsWellFormedUriString($templateRootUriString, [System.UriKind]::Absolute))
@@ -134,8 +134,8 @@ elseif ($Mode -eq "Workload")
 
     Write-Host "Deploy Applictation servers ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-app-deployment" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterFile $appLoadBalancerParametersFile
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineTemplate.AbsoluteUri `
+        -TemplateParameterFile $appVirtualMachineParametersFile
 
     Write-Host "Deploy WebFrontEnd servers with load balancer..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-web-deployment" `
@@ -144,42 +144,42 @@ elseif ($Mode -eq "Workload")
         
     Write-Host "Deploy DistributedCache servers ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-dch-deployment" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterFile $dchLoadBalancerParametersFile
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineTemplate.AbsoluteUri `
+        -TemplateParameterFile $dchVirtualMachineParametersFile
         
     Write-Host "Deploy Search servers ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-srch-deployment" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
-        -TemplateParameterFile $srchLoadBalancerParametersFile
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineTemplate.AbsoluteUri `
+        -TemplateParameterFile $srchVirtualMachineParametersF
 
     Write-Host "Creating SharePoint Farm on App1 ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-create-farm-App1-ext" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri `
         -TemplateParameterFile $createFarmApp1ExtensionParametersFile        
 
     Write-Host "Configuring SharePoint Farm on Dch1 ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-config-farm-Dch1-ext" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri `
         -TemplateParameterFile $configFarmDCH1ExtensionParametersFile         
 
     Write-Host "Configuring SharePoint Farm on Wfe1 and Srch1 ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-config-farm-Wfe1-Srch1-ext" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri `
         -TemplateParameterFile $configFarmWFE1SRCH1ExtensionParametersFile        
 
     Write-Host "Creating SharePoint Farm on Wfe2 and App2 ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-config-farm-Wfe2-App2-ext" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri `
         -TemplateParameterFile $configFarmWfe2App2ExtensionParametersFile        
 
     Write-Host "Creating SharePoint Farm on Dch2 and Srch2 ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-config-farm-Dch2-Srch2-ext" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri `
         -TemplateParameterFile $configFarmDch2Srch2ExtensionParametersFile
 
     Write-Host "Adding DNS Arecords for Web Applications ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-add-dns-arecord-ext" `
-        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $loadBalancerTemplate.AbsoluteUri `
+        -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineExtensionsTemplate.AbsoluteUri `
         -TemplateParameterFile $addArecordExtensionParametersFile        
 }
 elseif ($Mode -eq "Security")
