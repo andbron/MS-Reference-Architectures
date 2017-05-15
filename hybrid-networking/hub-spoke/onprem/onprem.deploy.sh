@@ -44,17 +44,14 @@ ONPREM_NETWORK_RESOURCE_GROUP_OUTPUT=$(az group create --name $RESOURCE_GROUP_NA
 # Create the simulated on-prem virtual network
 echo "Deploying on-prem simulated virtual network..."
 az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vnet-deployment" \
---template-uri $VIRTUAL_NETWORK_TEMPLATE_URI --parameters-file $ONPREM_VIRTUAL_NETWORK_PARAMETERS_FILE \
---subscription $SUBSCRIPTION_ID || exit 1
+--template-uri $VIRTUAL_NETWORK_TEMPLATE_URI --parameters @$ONPREM_VIRTUAL_NETWORK_PARAMETERS_FILE 
 
 # Create the simulated on-prem Ubuntu VM
 echo "Deploying on-prem Ubuntu VM..."
 az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vm-deployment" \
---template-uri $MULTI_VMS_TEMPLATE_URI --parameters-file $ONPREM_VM_PARAMETERS_FILE \
---subscription $SUBSCRIPTION_ID || exit 1
+--template-uri $MULTI_VMS_TEMPLATE_URI --parameters @$ONPREM_VM_PARAMETERS_FILE
 
 # Install VPN gateway
 echo "Deploying VPN gateway..."
 az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vpn-gw-deployment" \
---template-file $ONPREM_VPN_TEMPLATE_FILE --parameters-file $ONPREM_VPN_GW_PARAMETERS_FILE \
---subscription $SUBSCRIPTION_ID || exit 1
+--template-file $ONPREM_VPN_TEMPLATE_FILE --parameters $ONPREM_VPN_GW_PARAMETERS_FILE

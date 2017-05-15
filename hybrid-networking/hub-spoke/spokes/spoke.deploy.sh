@@ -44,17 +44,14 @@ SPOKE_PEERING_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.peering.parameters.js
 # Create the VNet
 echo "Deploying VNet for Spoke${SPOKE}..."
 az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-deployment" \
---template-uri $VIRTUAL_NETWORK_TEMPLATE_URI --parameters-file $SPOKE_VNET_PARAMETERS_FILE \
---subscription $SUBSCRIPTION_ID || exit 1
+--template-uri $VIRTUAL_NETWORK_TEMPLATE_URI --parameters @$SPOKE_VNET_PARAMETERS_FILE
 
 # Create the peering connection
 echo "Deploying VNet peering for Spoke${SPOKE}..."
 az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-peering-deployment" \
---template-file $PEERING_TEMPLATE_FILE --parameters-file $SPOKE_PEERING_PARAMETERS_FILE \
---subscription $SUBSCRIPTION_ID || exit 1
+--template-file $PEERING_TEMPLATE_FILE --parameters @$SPOKE_PEERING_PARAMETERS_FILE
 
 # Create the load balanced VMs connection
 echo "Deploying load balanced VMs for Spoke${SPOKE}..."
 az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-vnet-peering-deployment" \
---template-uri $LB_TEMPLATE_URI --parameters-file $SPOKE_WEB_PARAMETERS_FILE \
---subscription $SUBSCRIPTION_ID || exit 1
+--template-uri $LB_TEMPLATE_URI --parameters @$SPOKE_WEB_PARAMETERS_FILE

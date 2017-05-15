@@ -39,5 +39,4 @@ SPOKE_UDR_PARAMETERS_FILE="${SCRIPT_DIR}/spoke${SPOKE}.udr.parameters.json"
 # Create the UDR
 echo "Deploying UDR for Spoke${SPOKE}..."
 az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-spoke${SPOKE}-udr-deployment" \
---template-uri $UDR_TEMPLATE_URI --parameters-file $SPOKE_UDR_PARAMETERS_FILE \
---subscription $SUBSCRIPTION_ID || exit 1
+--template-uri $UDR_TEMPLATE_URI --parameters @$SPOKE_UDR_PARAMETERS_FILE

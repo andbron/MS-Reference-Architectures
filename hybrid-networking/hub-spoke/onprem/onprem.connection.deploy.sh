@@ -34,5 +34,4 @@ ONPREM_CONNECTION_PARAMETERS_FILE="${SCRIPT_DIR}/onprem.connection.parameters.js
 # Install VPN connnection to hub
 echo "Deploying VPN conection to hub..."
 az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-onprem-vpn-gw-cn-deployment" \
---template-file $ONPREM_CONNECTION_TEMPLATE_FILE --parameters-file $ONPREM_CONNECTION_PARAMETERS_FILE \
---subscription $SUBSCRIPTION_ID || exit 1
+--template-file $ONPREM_CONNECTION_TEMPLATE_FILE --parameters @$ONPREM_CONNECTION_PARAMETERS_FILE

@@ -14,10 +14,10 @@
         "nics": [
           {
             "isPublic": "true",
-            "domainNameLabelPrefix": "testjb",
             "subnetName": "default",
             "privateIPAllocationMethod": "Dynamic",
             "publicIPAllocationMethod": "Dynamic",
+            "domainNameLabelPrefix":"",
             "enableIPForwarding": false,
             "dnsServers": [
             ],

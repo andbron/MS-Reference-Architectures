@@ -39,5 +39,4 @@ SPOKE_PEERING_PARAMETERS_FILE="${SCRIPT_DIR}/hub.spoke${SPOKE}.peering.parameter
 # Install VNet peering
 echo "Deploying VNet peering..."
 az group deployment create --resource-group $RESOURCE_GROUP_NAME --name "ra-hub-spoke${SPOKE}peering-deployment" \
---template-file $PEERING_TEMPLATE_FILE --parameters-file $SPOKE_PEERING_PARAMETERS_FILE \
---subscription $SUBSCRIPTION_ID || exit 1
+--template-file $PEERING_TEMPLATE_FILE --parameters @$SPOKE_PEERING_PARAMETERS_FILE
