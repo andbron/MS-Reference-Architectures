@@ -13,7 +13,7 @@
         "name": "ra-hub-vpn-vgw",
         "gatewayType": "Vpn",
         "vpnType": "RouteBased",
-        "sku": "HighPerformance"
+        "sku": "Standard"
       }
     },
     "connectionSettings": {
