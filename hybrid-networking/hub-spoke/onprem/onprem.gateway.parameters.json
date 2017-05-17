@@ -13,7 +13,7 @@
         "name": "ra-onprem-vpn-vgw",
         "gatewayType": "Vpn",
         "vpnType": "RouteBased",
-        "sku": "HighPerformance"
+        "sku": "Standard"
       }
     }
   }
