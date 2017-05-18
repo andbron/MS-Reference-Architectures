@@ -40,7 +40,8 @@
   },
   "variables": {
     "templateBaseUrl": "https://raw.githubusercontent.com/mspnp/template-building-blocks/master/",
-    "localRepoBaseUrl": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/compliance/uk-official/three-tier-web-with-adds/",
+    //"localRepoBaseUrl": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/compliance/uk-official/three-tier-web-with-adds/",
+    "localRepoBaseUrl": "https://raw.githubusercontent.com/ben-houghton/reference-architectures/master/compliance/uk-official/three-tier-web-with-adds/",
     "operationalVirtualNetworkName": "azure-operational-vnet",
     "managementlVirtualNetworkName": "azure-mgmt-vnet",
     "buildingBlocks": {
@@ -53,8 +54,8 @@
       "azureVirtualNetworkDnsParametersFile": "[concat(variables('localRepoBaseUrl'), 'parameters/azure/virtualNetwork-adds-dns.parameters.json')]"
     },
     "templates": {
-      "installAdds": "[concat(variables('templateBaseUrl'), 'templates/onpremise/adds-domain-controller-extension-settings-mapper.json')]",
-      "installAddsScript": "[concat(variables('templateBaseUrl'), '/extensions/adds.ps1')]"
+      "installAdds": "[concat(variables('localRepoBaseUrl'), 'templates/onpremise/adds-domain-controller-extension-settings-mapper.json')]",
+      "installAddsScript": "[concat(variables('localRepoBaseUrl'), '/extensions/adds.ps1')]"
     }
   },
   "resources": [
