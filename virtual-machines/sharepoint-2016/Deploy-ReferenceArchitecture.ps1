@@ -16,8 +16,8 @@ $ErrorActionPreference = "Stop"
 $templateRootUriString = $env:TEMPLATE_ROOT_URI
 if ($templateRootUriString -eq $null)
 {
-    # $templateRootUriString = "https://raw.githubusercontent.com/pstork/template-building-blocks/pstork/SharePoint2016/"
-    $templateRootUriString = "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/"
+    $templateRootUriString = "https://raw.githubusercontent.com/pstork/template-building-blocks/pstork/SharePoint2016/"
+    #  $templateRootUriString = "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/"
 }
 
 if (![System.Uri]::IsWellFormedUriString($templateRootUriString, [System.UriKind]::Absolute))
@@ -59,12 +59,12 @@ $appVirtualMachineParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "par
 $webLoadBalancerParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\web.parameters.json")
 $dchVirtualMachineParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\dch.parameters.json")
 $srchVirtualMachineParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\srch.parameters.json")
-$createFarmApp1ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "spt-create-farm-app1-ext.parameters.json")
-$configFarmDCH1ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "spt-config-farm-dch1-ext.parameters.json")
-$configFarmWFE1SRCH1ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "spt-config-farm-wfe1-srch1-ext.parameters.json")
-$configFarmWfe2App2ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "spt-config-farm-wfe2-app2-ext.parameters.json")
-$configFarmDch2Srch2ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "spt-config-farm-dch2-srch2-ext.parameters.json")
-$addArecordExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "add-dns-arecord.parameters.json")
+$createFarmApp1ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\spt-create-farm-app1-ext.parameters.json")
+$configFarmDCH1ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\spt-config-farm-dch1-ext.parameters.json")
+$configFarmWFE1SRCH1ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\spt-config-farm-wfe1-srch1-ext.parameters.json")
+$configFarmWfe2App2ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\spt-config-farm-wfe2-app2-ext.parameters.json")
+$configFarmDch2Srch2ExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\spt-config-farm-dch2-srch2-ext.parameters.json")
+$addArecordExtensionParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\add-dns-arecord.parameters.json")
 $networkSecurityGroupParametersFile = [System.IO.Path]::Combine($PSScriptRoot, "parameters\networkSecurityGroups.parameters.json")
 
 
@@ -130,7 +130,7 @@ if ($Mode -eq "Infrastructure")
 elseif ($Mode -eq "Workload")
 {
     Write-Host "Creating workload resource group..."
-    $workloadResourceGroup = New-AzureRmResourceGroup -Name $workloadResourceGroupName -Location $Location
+   $workloadResourceGroup = New-AzureRmResourceGroup -Name $workloadResourceGroupName -Location $Location
 
     Write-Host "Deploy Applictation servers ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-app-deployment" `
@@ -150,7 +150,7 @@ elseif ($Mode -eq "Workload")
     Write-Host "Deploy Search servers ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-srch-deployment" `
         -ResourceGroupName $workloadResourceGroup.ResourceGroupName -TemplateUri $virtualMachineTemplate.AbsoluteUri `
-        -TemplateParameterFile $srchVirtualMachineParametersF
+        -TemplateParameterFile $srchVirtualMachineParametersFile
 
     Write-Host "Creating SharePoint Farm on App1 ..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-create-farm-App1-ext" `

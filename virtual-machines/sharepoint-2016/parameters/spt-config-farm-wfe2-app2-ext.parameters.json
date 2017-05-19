@@ -19,7 +19,7 @@
                 "configurationFunction": "create-join-farm.ps1\\CreateJoinFarm",
                 "properties": {
                   "domainName": "contoso",
-                  "DomainFQDNName": "contoso.com",
+                  "DomainFQDNName": "contoso.local",
                   "sqlAlwaysOnEndpointName": "alwayson-ag-listener",
                   "ServerRole": "WebFrontEnd",
                   "driveletter": "F",
@@ -74,7 +74,7 @@
                 "configurationFunction": "create-join-farm.ps1\\CreateJoinFarm",
                 "properties": {
                   "domainName": "contoso",
-                  "DomainFQDNName": "contoso.com",
+                  "DomainFQDNName": "contoso.local",
                   "sqlAlwaysOnEndpointName": "alwayson-ag-listener",
                   "ServerRole": "Application",
                   "driveletter": "F",

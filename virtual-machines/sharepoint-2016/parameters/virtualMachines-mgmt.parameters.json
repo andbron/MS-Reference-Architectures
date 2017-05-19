@@ -21,11 +21,15 @@
             "publicIPAllocationMethod": "static",
             "enableIPForwarding": false,
             "domainNameLabelPrefix": "",
-            "dnsServers": [ ]
+            "dnsServers": [
+              "10.0.4.4",
+              "10.0.4.5",
+              "168.63.129.16"
+            ]
           }
         ],
         "imageReference": {
-         "publisher": "MicrosoftWindowsServer",
+          "publisher": "MicrosoftWindowsServer",
           "offer": "WindowsServer",
           "sku": "2012-R2-Datacenter",
           "version": "latest"
@@ -49,7 +53,7 @@
             "typeHandlerVersion": "1.3",
             "autoUpgradeMinorVersion": true,
             "settingsConfigMapperUri": "https://raw.githubusercontent.com/pstork/template-building-blocks/pstork/SharePoint2016/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
-           "settingsConfig": {
+            "settingsConfig": {
               "AntimalwareEnabled": true,
               "RealtimeProtectionEnabled": "true",
               "ScheduledScanSettings": {
@@ -64,7 +68,7 @@
                 "Processes": ""
               }
             },
-            "protectedSettingsConfig": { }
+            "protectedSettingsConfig": {}
           }
         ],
         "availabilitySet": {
@@ -88,4 +92,3 @@
     }
   }
 }
-

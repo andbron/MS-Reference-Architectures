@@ -18,7 +18,7 @@
                 "modulesURL": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/virtual-machines/n-tier-windows/extensions/CreateFailoverCluster.ps1.zip",
                 "configurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
                 "properties": {
-                  "domainName": "contoso.com",
+                  "domainName": "contoso.local",
                   "clusterName": "ra-ntier-sql-fc",
                   "sharePath": "\\\\fsw1\\sql-fs",
                   "nodes": [

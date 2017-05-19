@@ -46,7 +46,7 @@
               "protocol": "*",
               "sourcePortRange": "*",
               "destinationPortRange": "1433",
-              "sourceAddressPrefix": "10.0.2.0/24",
+              "sourceAddressPrefix": "10.0.5.0/24",
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 101,
@@ -58,7 +58,7 @@
               "protocol": "*",
               "sourcePortRange": "*",
               "destinationPortRange": "1433",
-              "sourceAddressPrefix": "10.0.1.0/24",
+              "sourceAddressPrefix": "10.0.2.0/24",
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 102,
@@ -70,7 +70,7 @@
               "protocol": "*",
               "sourcePortRange": "*",
               "destinationPortRange": "1433",
-              "sourceAddressPrefix": "10.0.2.0/24",
+              "sourceAddressPrefix": "10.0.6.0/24",
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 103,
@@ -87,17 +87,27 @@
               "access": "Allow",
               "protocol": "Tcp"
             },
-            {
-              "name": "deny-other-traffic",
-              "description": "Deny all other traffic",
-              "protocol": "*",
+                        {
+              "name": "allow-traffic-from-ad",
+              "direction": "Inbound",
+              "priority": 111,
+              "sourceAddressPrefix": "10.0.4.0/24",
+              "destinationAddressPrefix": "*",
               "sourcePortRange": "*",
               "destinationPortRange": "*",
-              "sourceAddressPrefix": "*",
+              "access": "Allow",
+              "protocol": "*"
+            },
+                        {
+              "name": "allow-traffic-from-gateway",
+              "direction": "Inbound",
+              "priority": 112,
+              "sourceAddressPrefix": "10.0.255.224/27",
               "destinationAddressPrefix": "*",
-              "access": "Deny",
-              "priority": 120,
-              "direction": "Inbound"
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "access": "Allow",
+              "protocol": "*"
             }
           ]
         },

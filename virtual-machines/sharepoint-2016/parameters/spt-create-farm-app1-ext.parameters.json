@@ -2,10 +2,10 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "virtualMachinesExtensionSettings": {
+  "virtualMachinesExtensionSettings": {
       "value": [
         {
-          "vms": [ "ra-sp2016-app-vm1" ],
+          "vms": ["ra-sp2016-app-vm1"],
           "extensions": [
             {
               "name": "configSPservers",
@@ -19,7 +19,7 @@
                 "configurationFunction": "create-join-farm.ps1\\CreateJoinFarm",
                 "properties": {
                   "domainName": "contoso",
-                  "DomainFQDNName": "contoso.com",
+                  "DomainFQDNName": "contoso.local",
                   "sqlAlwaysOnEndpointName": "alwayson-ag-listener",
                   "ServerRole": "Application",
                   "driveletter": "F",
@@ -55,7 +55,6 @@
                   "WebPoolManagedAccount": "AweS0me@PW"
                 }
               }
-
             }
           ]
         }

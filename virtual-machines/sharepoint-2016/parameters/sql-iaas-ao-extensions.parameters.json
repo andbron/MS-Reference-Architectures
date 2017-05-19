@@ -47,7 +47,7 @@
                 "modulesURL": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/virtual-machines/n-tier-windows/extensions/PrepareAlwaysOnSqlServer.ps1.zip",
                 "configurationFunction": "PrepareAlwaysOnSqlServer.ps1\\PrepareAlwaysOnSqlServer",
                 "properties": {
-                  "domainName": "contoso.com",
+                  "domainName": "contoso.local",
                   "sqlAlwaysOnEndpointName": "ra-sp2016-sql-hadr",
                   "adminCreds": {
                     "userName": "testuser",
