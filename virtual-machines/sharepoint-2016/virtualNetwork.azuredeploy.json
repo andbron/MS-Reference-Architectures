@@ -4,14 +4,14 @@
   "parameters": {
     "templateRootUri": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/pstork/template-building-blocks/master/",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/",
       "metadata": {
         "description": "Root path for templates"
       }
     },
     "parameterRootUri": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/pstork/reference-architectures/pstork/SharePoint2016/virtual-machines/sharepoint-2016/parameters/",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/larry/sharepoint/virtual-machines/sharepoint-2016/parameters/",
       "metadata": {
         "decription": "Root path for parameters"
       }
