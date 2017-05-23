@@ -13,10 +13,10 @@
               "type": "CustomScriptExtension",
               "typeHandlerVersion": "1.8",
               "autoUpgradeMinorVersion": false,
-              "settingsConfigMapperUri": "https://raw.githubusercontent.com/pstork/template-building-blocks/pstork/SharePoint2016/templates/resources/SharePoint2016/add-arecord-extension-settings-mapper.json",
+              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/larry/sharepoint2016/templates/resources/SharePoint2016/add-arecord-extension-settings-mapper.json",
               "settingsConfig": {
                 "fileUris": [
-                  "https://raw.githubusercontent.com/pstork/template-building-blocks/pstork/SharePoint2016/scripts/add-dns.ps1"
+                  "https://raw.githubusercontent.com/mspnp/template-building-blocks/larry/sharepoint2016/scripts/add-dns.ps1"
                 ]
               },
               "protectedSettingsConfig": {
