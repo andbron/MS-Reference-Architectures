@@ -1,7 +1,8 @@
 A Microsoft Azure Three Tier Web Application Architecture For Workloads Classified as UK-OFFICIAL.
 ===================================================================
 
-##Contents
+Contents
+========
 
 - [Overview](#overview) 	
 - [Architecture Diagram and Components](#architecture-diagram-and-components)
@@ -11,7 +12,7 @@ A Microsoft Azure Three Tier Web Application Architecture For Workloads Classifi
 	- [Identity](#identity)
 	- [Security](#security)
 - [NCSC Security Matrix Compliance](#ncsc-security-matrix-compliance)
-- [Deployment Guide](#deployment-guide])
+- [Deployment Guide](#deployment-guide)
 - [Deployment and Configuration Activities](#deployment-and-configuration-activities) 
 	- [Deployment Process](#deployment-process)
 	- [Deploy Networking Infrastructure](#deploy-networking-infrastructure)
@@ -442,6 +443,7 @@ troubleshooting** blade.
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png"/>
 </a>
 
+
 1. Click on the **Deploy to Azure** button to begin the first stage of the deployment. The link takes you to the Azure Portal.
 2. Select **Create New** and enter a value such as `uk-official-adds-rg` in the **Resource group** textbox.
 3. Select a region such as `UKSouth` from the **Location** drop down box (All Resource Groups required for this architecture should be in the same Azure region e.g. `UKSouth`.
@@ -463,6 +465,7 @@ troubleshooting** blade.
 <a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fmspnp%2Freference-architectures%2Fmaster%2Fcompliance%2Fuk-official%2Fthree-tier-web-with-adds%2Ftemplates%2Fworkloads.azuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png"/>
 </a>
+
 
 1. Click on the **Deploy to Azure** button to begin the first stage of the deployment. The link takes you to the Azure Portal.
 2. Select **Create New** and enter a value such as `uk-official-operational-rg` in the **Resource group** textbox.
@@ -499,7 +502,7 @@ UK Governments Private Network Connectivity
 
 Microsoft's customers are now able to use [private connections](https://news.microsoft.com/en-gb/2016/12/14/microsoft-now-offers-private-internet-connections-to-its-uk-data-centres/#sm.0001dca7sq10r1couwf4vvy9a85zx)
 to the company's UK data centres. Microsoft's partners are providing a gateway from PSN/N3 to [ExpressRoute](https://azure.microsoft.com/en-us/services/expressroute/) and into Azure - just one of the new services the group has unveiled
-since the company launched its [**Azure**](https://azure.microsoft.com/en-us/blog/) and Office 365 cloud offering in this country at launch (http://news.microsoft.com/en-gb/2016/09/07/not-publish-microsoft-becomes-first-company-open-data-centres-uk/). Since then, [**thousands of customers**](https://enterprise.microsoft.com/en-gb/industries/public-sector/microsoft-uk-data-centres-continue-to-build-momentum/?wt.mc_id=AID563187_QSG_1236) including the Ministry of Defence, the Met Police and parts of the NHS - have signed up to take advantage of the sites, which offer UK data residency, security and reliability.
+since the company launched its [**Azure**](https://azure.microsoft.com/en-us/blog/) and Office 365 cloud offering in this country at launch (https://news.microsoft.com/en-gb/2016/09/07/not-publish-microsoft-becomes-first-company-open-data-centres-uk/). Since then, [**thousands of customers**](https://enterprise.microsoft.com/en-gb/industries/public-sector/microsoft-uk-data-centres-continue-to-build-momentum/?wt.mc_id=AID563187_QSG_1236) including the Ministry of Defence, the Met Police and parts of the NHS - have signed up to take advantage of the sites, which offer UK data residency, security and reliability.
 
 Cost
 ====
