@@ -18,10 +18,12 @@
             "isPrimary": "true",
             "subnetName": "sql",
             "privateIPAllocationMethod": "Dynamic",
-            "enableIPForwarding": false,
+             "enableIPForwarding": false,
             "domainNameLabelPrefix": "",
-            "dnsServers": []
-          }
+           "dnsServers": [
+              "10.0.4.4",
+              "10.0.4.5"
+            ]          }
         ],
         "imageReference": {
           "publisher": "MicrosoftWindowsServer",
