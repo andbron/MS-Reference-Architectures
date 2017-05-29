@@ -97,6 +97,11 @@ if ($Mode -eq "Infrastructure")
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
         -TemplateUri $virtualMachineTemplate.AbsoluteUri -TemplateParameterFile $domainControllersParametersFile
 
+    Write-Host "Updating virtual network DNS servers..."
+    New-AzureRmResourceGroupDeployment -Name "ra-sp2016-sql-update-dns" `
+        -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName -TemplateUri $virtualNetworkTemplate.AbsoluteUri `
+        -TemplateParameterFile $virtualNetworkDNSParametersFile        
+
     Write-Host "Creating ADDS forest..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-primary-ad-ext" `
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `
