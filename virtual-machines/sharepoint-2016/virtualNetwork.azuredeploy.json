@@ -113,7 +113,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "name": "ra-2016-update-dns",
+      "name": "ra-sp2016-update-dns",
       "dependsOn": [
         "ra-sp2016-ad-deployment"
       ],
