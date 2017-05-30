@@ -17,14 +17,6 @@
             "name": "cache",
             "addressPrefix": "10.0.2.0/24"
           },
-         {
-            "name": "app",
-            "addressPrefix": "10.0.5.0/24"
-          },
-          {
-            "name": "search",
-            "addressPrefix": "10.0.6.0/24"
-          },
           {
             "name": "sql",
             "addressPrefix": "10.0.3.0/24"

@@ -22,13 +22,11 @@
       "deployment": {
         "loadBalancer": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/loadBalancer-backend-n-vm/azuredeploy.json')]",
         "virtualNetwork": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/vnet-n-subnet/azuredeploy.json')]",
-        "virtualNetworkGateway": "[uri(parameters('templateRootUri'), 'templates/buildingBlocks/vpn-gateway-vpn-connection/azuredeploy.json')]",
         "virtualMachine": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/multi-vm-n-nic-m-storage/azuredeploy.json')]",
         "extensions": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/virtualMachine-extensions/azuredeploy.json')]"
       },
       "parameter": {
         "virtualNetwork": "[concat(parameters('parameterRootUri'), 'virtualNetwork.parameters.json')]",
-        "virtualNetworkGateway": "[uri(parameters('parameterRootUri'), 'virtualNetworkGateway.parameters.json')]",
         "ad": "[concat(parameters('parameterRootUri'), 'adds/ad.parameters.json')]",
         "adPrimaryExtension": "[concat(parameters('parameterRootUri'), 'adds/create-adds-forest-extension.parameters.json')]",
         "adSecondaryExtension": "[concat(parameters('parameterRootUri'), 'adds/add-adds-domain-controller.parameters.json')]",
@@ -56,24 +54,7 @@
           "contentVersion": "1.0.0.0"
         }
       }
-    },
-   {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
-      "name": "ra-sp2016-vpn-deployment",
-      "dependsOn": [
-        "ra-sp2016-vnet-deployment"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('templates').deployment.virtualNetworkGateway]"
-        },
-        "parametersLink": {
-          "uri": "[variables('templates').parameter.virtualNetworkGateway]"
-        }
-      }
-   },    
+    },   
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
