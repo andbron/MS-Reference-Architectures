@@ -27,7 +27,7 @@
       "parameter": {
         "virtualNetwork": "[uri(parameters('parameterRootUri'), 'virtualNetwork.parameters.json')]",
         "virtualNetworkGateway": "[uri(parameters('parameterRootUri'), 'virtualNetworkGateway.parameters.json')]",
-        "managementTierJumpbox": "[concat(parameters('parameterRootUri'), 'virtual-machines/n-tier-linux/parameters/linux/managementTierJumpbox.parameters.json')]"
+        "managementTierJumpbox": "[concat(parameters('parameterRootUri'), 'managementTierJumpbox.parameters.json')]"
       }
     }
   },
