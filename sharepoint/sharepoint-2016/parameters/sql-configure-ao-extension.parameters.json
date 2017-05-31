@@ -1,0 +1,69 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachinesExtensionSettings": {
+      "value": [
+        {
+          "vms": [ "ra-sp2016-sql-vm2" ],
+          "extensions": [
+            {
+              "name": "configuringAlwaysOn",
+              "publisher": "Microsoft.Powershell",
+              "type": "DSC",
+              "typeHandlerVersion": "2.19",
+              "autoUpgradeMinorVersion": false,
+            "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
+              "settingsConfig": {
+                "modulesURL": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/virtual-machines/n-tier-windows/extensions/CreateFailoverCluster.ps1.zip",
+                "configurationFunction": "CreateFailoverCluster.ps1\\CreateFailoverCluster",
+                "properties": {
+                  "domainName": "contoso.local",
+                  "clusterName": "ra-ntier-sql-fc",
+                  "sharePath": "\\\\fsw1\\sql-fs",
+                  "nodes": [
+                    "sql1",
+                    "sql2"
+                  ],
+                  "sqlAlwaysOnEndpointName": "ra-sp2016-sql-hadr",
+                  "sqlAlwaysOnAvailabilityGroupName": "alwayson-ag",
+                  "sqlAlwaysOnAvailabilityGroupListenerName": "alwayson-ag-listener",
+                  "SqlAlwaysOnAvailabilityGroupListenerPort": "1433",
+                  "databaseNames": "AutoHa-sample",
+                  "lbName": "ra-sp2016-sql-lb",
+                  "lbAddress": "10.0.3.100",
+                  "primaryReplica": "sql2",
+                  "secondaryReplica": "sql1",
+                  "dnsServerName": "ad1",
+                  "adminCreds": {
+                    "userName": "testuser",
+                    "password": "privateSettingsRef:adminPassword"
+                  },
+                  "sqlServiceCreds": {
+                    "userName": "sqlservicetestuser",
+                    "password": "privateSettingsRef:sqlServerServiceAccountPassword"
+                  },
+                  "SQLAuthCreds": {
+                    "userName": "sqlsa",
+                    "password": "privateSettingsRef:sqlAuthPassword"
+                  },
+                  "NumberOfDisks": "2",
+                  "WorkloadType": "GENERAL"
+                }
+              },
+              "protectedSettingsConfig": {
+                "items": {
+                  "adminPassword": "AweS0me@PW",
+                  "sqlServerServiceAccountPassword": "AweS0me@SQLServicePW",
+                  "sqlAuthPassword": "AweS0me@SQLPW"
+                }
+              }
+
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+

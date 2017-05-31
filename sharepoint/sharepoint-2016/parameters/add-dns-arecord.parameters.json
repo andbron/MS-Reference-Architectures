@@ -1,0 +1,31 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachinesExtensionSettings": {
+      "value": [
+        {
+          "vms": [ "ra-sp2016-app-vm1" ],
+          "extensions": [
+            {
+              "name": "add-dns-arecord",
+              "publisher": "Microsoft.Compute",
+              "type": "CustomScriptExtension",
+              "typeHandlerVersion": "1.8",
+              "autoUpgradeMinorVersion": false,
+              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/larry/sharepoint2016/templates/resources/SharePoint2016/add-arecord-extension-settings-mapper.json",
+              "settingsConfig": {
+                "fileUris": [
+                  "https://raw.githubusercontent.com/mspnp/template-building-blocks/larry/sharepoint2016/scripts/add-dns.ps1"
+                ]
+              },
+              "protectedSettingsConfig": {
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+

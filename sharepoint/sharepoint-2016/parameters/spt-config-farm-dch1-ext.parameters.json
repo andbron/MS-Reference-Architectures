@@ -1,0 +1,64 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachinesExtensionSettings": {
+      "value": [
+        {
+          "vms": [ "ra-sp2016-dch-vm1" ],
+          "extensions": [
+            {
+              "name": "createSPfarm",
+              "publisher": "Microsoft.Powershell",
+              "type": "DSC",
+              "typeHandlerVersion": "2.19",
+              "autoUpgradeMinorVersion": false,
+              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
+              "settingsConfig": {
+                "modulesURL": "https://github.com/mspnp/template-building-blocks/blob/larry/sharepoint2016/scripts/Create-Join-Farm.ps1.zip?raw=true",
+                "configurationFunction": "create-join-farm.ps1\\CreateJoinFarm",
+                "properties": {
+                  "domainName": "contoso",
+                  "DomainFQDNName": "contoso.local",
+                  "sqlAlwaysOnEndpointName": "alwayson-ag-listener",
+                  "ServerRole": "DistributedCache",
+                  "driveletter": "F",
+                  "CentralAdmin": "False",
+                  "Passphrase": {
+                    "userName": "testuser",
+                    "password": "privateSettingsRef:PassPhrasePassword"
+                  },
+                  "FarmAccount": {
+                    "userName": "sp_farm",
+                    "password": "privateSettingsRef:FarmPassword"
+                  },
+                  "SPSetupAccount": {
+                    "userName": "testuser",
+                    "password": "privateSettingsRef:SPSetupAccountPassword"
+                  },
+                  "ServicePoolManagedAccount": {
+                    "userName": "sp_svcpool",
+                    "password": "privateSettingsRef:ServicePoolManagedAccount"
+                  },
+                  "WebPoolManagedAccount": {
+                    "userName": "sp_webpool",
+                    "password": "privateSettingsRef:WebPoolManagedAccount"
+                  }
+                }
+              },
+              "protectedSettingsConfig": {
+                "items": {
+                  "PassPhrasePassword": "AweS0me@PW",
+                  "FarmPassword": "AweS0me@PW",
+                  "SPSetupAccountPassword": "AweS0me@PW",
+                  "ServicePoolManagedAccount": "AweS0me@PW",
+                  "WebPoolManagedAccount": "AweS0me@PW"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

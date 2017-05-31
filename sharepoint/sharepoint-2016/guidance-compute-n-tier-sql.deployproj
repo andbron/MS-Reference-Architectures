@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|AnyCPU">
+      <Configuration>Debug</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|AnyCPU">
+      <Configuration>Release</Configuration>
+      <Platform>AnyCPU</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>96388c9f-bce8-4fe4-9fb8-ba5a4135fa35</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworkIdentifier>Deployment</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>1.0</TargetFrameworkVersion>
+    <PrepareForBuildDependsOn>
+    </PrepareForBuildDependsOn>
+  </PropertyGroup>
+  <Import Condition=" Exists('Deployment.targets') " Project="Deployment.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+  <!-- vertag<:>start tokens<:>maj.min -->
+  <Import Condition=" Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets') " Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets" />
+  <!-- vertag<:>end -->
+  <ItemGroup>
+    <Content Include="virtualNetwork.azuredeploy.json" />
+    <None Include="Deploy-ReferenceArchitecture.ps1" />
+    <None Include="extensions\adds-forest.ps1" />
+    <None Include="extensions\adds.ps1" />
+    <None Include="extensions\CreateADBDC.ps1.zip" />
+    <None Include="extensions\CreateADPDC.ps1.zip" />
+    <None Include="extensions\CreateFailoverCluster.ps1.zip" />
+    <None Include="extensions\CreateFileShareWitness.ps1.zip" />
+    <None Include="extensions\iisaspnet.ps1.zip" />
+    <None Include="extensions\PrepareAlwaysOnSqlServer.ps1.zip" />
+    <None Include="parameters\adds\ad.parameters.json" />
+    <None Include="parameters\adds\add-adds-domain-controller.parameters.json" />
+    <None Include="parameters\adds\create-adds-forest-extension.parameters.json" />
+    <None Include="parameters\adds\virtualNetwork-adds-dns.parameters.json" />
+    <None Include="parameters\sql-configure-ao-extension.parameters.json" />
+    <None Include="parameters\sql-iaas-ao-extensions.parameters.json" />
+    <None Include="parameters\fsw.parameters.json" />
+    <None Include="parameters\sql.parameters.json" />
+    <None Include="parameters\networkSecurityGroups.parameters.json" />
+    <None Include="parameters\web.parameters.json" />
+    <None Include="parameters\virtualMachines-mgmt.parameters.json" />
+    <None Include="parameters\virtualNetwork.parameters.json" />
+    <None Include="parameters\biz.parameters.json" />
+    <None Include="templates\adds\ad-forest-extension-settings-mapper.json" />
+    <None Include="templates\adds\adds-domain-controller-extension-settings-mapper.json" />
+    <None Include="security.azuredeploy.json" />
+    <None Include="workload.azuredeploy.json" />
+  </ItemGroup>
+  <Target Name="GetReferenceAssemblyPaths" />
+</Project>

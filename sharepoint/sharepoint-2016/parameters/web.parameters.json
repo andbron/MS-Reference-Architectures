@@ -1,0 +1,118 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "loadBalancerSettings": {
+      "value": {
+        "name": "ra-sp2016-wfe-lb",
+        "frontendIPConfigurations": [
+          {
+            "name": "ra-sp2016-web-lbfe1",
+            "loadBalancerType": "internal",
+            "domainNameLabel": "",
+            "internalLoadBalancerSettings": {
+              "privateIPAddress": "10.0.1.100",
+              "subnetName": "web"
+            }
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "http",
+            "frontendPort": 80,
+            "backendPort": 80,
+            "protocol": "Tcp",
+            "backendPoolName": "ra-sp2016-wfe-lb-bep1",
+            "frontendIPConfigurationName": "ra-sp2016-web-lbfe1",
+            "enableFloatingIP": true,
+            "probeName": "ra-sp2016-wfe-lbp1"
+          },
+          {
+            "name": "https",
+            "frontendPort": 443,
+            "backendPort": 443,
+            "protocol": "Tcp",
+            "backendPoolName": "ra-sp2016-wfe-lb-bep1",
+            "frontendIPConfigurationName": "ra-sp2016-web-lbfe1",
+            "enableFloatingIP": true,
+            "probeName": "ra-sp2016-wfe-lbp1"
+          }
+        ],
+        "probes": [
+          {
+            "name": "ra-sp2016-wfe-lbp1",
+            "port": 80,
+            "protocol": "Http",
+            "requestPath": "/"
+          }
+        ],
+        "backendPools": [
+          {
+            "name": "ra-sp2016-wfe-lb-bep1",
+            "nicIndex": 0
+          }
+        ],
+        "inboundNatRules": []
+      }
+    },
+    "virtualMachinesSettings": {
+      "value": {
+        "namePrefix": "ra-sp2016-wfe",
+        "computerNamePrefix": "wfe",
+        "size": "Standard_DS3_v2",
+        "adminUsername": "testuser",
+        "adminPassword": "AweS0me@PW",
+        "osType": "windows",
+        "osAuthenticationType": "password",
+        "sshPublicKey": "",
+        "nics": [
+          {
+            "isPublic": "false",
+            "isPrimary": "true",
+            "subnetName": "web",
+            "privateIPAllocationMethod": "static",
+            "startingIPAddress": "10.0.1.4",
+            "enableIPForwarding": false,
+            "domainNameLabelPrefix": "",
+            "dnsServers": []
+          }
+        ],
+        "imageReference": {
+          "publisher": "MicrosoftSharePoint",
+          "offer": "MicrosoftSharePointServer",
+          "sku": "2016",
+          "version": "latest"
+        },
+        "osDisk": {
+          "caching": "ReadWrite"
+        },
+        "dataDisks": {
+          "count": 1,
+          "properties": {
+            "diskSizeGB": 128,
+            "caching": "None",
+            "createOption": "Empty"
+          }
+        },
+        "extensions": [],
+        "availabilitySet": {
+          "useExistingAvailabilitySet": "No",
+          "name": "wfe-as"
+        }
+      }
+    },
+    "virtualNetworkSettings": {
+      "value": {
+        "name": "ra-sp2016-vnet",
+        "resourceGroup": "ra-sp2016-network-rg"
+      }
+    },
+    "buildingBlockSettings": {
+      "value": {
+        "storageAccountsCount": 1,
+        "vmCount": 2,
+        "vmStartIndex": 1
+      }
+    }
+  }
+}

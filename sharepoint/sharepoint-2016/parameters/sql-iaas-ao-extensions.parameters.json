@@ -1,0 +1,112 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachinesExtensionSettings": {
+      "value": [
+        {
+          "vms": [ "ra-sp2016-sql-vm1" ],
+          "extensions": [
+            {
+              "name": "SqlVmIaasExtension",
+              "type": "SqlIaaSAgent",
+              "publisher": "Microsoft.SqlServer.Management",
+              "typeHandlerVersion": "1.2",
+              "autoUpgradeMinorVersion": "true",
+              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
+              "settingsConfig": {
+                "AutoTelemetrySettings": {
+                  "Region": "West US 2"
+                },
+                "AutoPatchingSettings": {
+                  "PatchCategory": "WindowsMandatoryUpdates",
+                  "Enable": true,
+                  "DayOfWeek": "Sunday",
+                  "MaintenanceWindowStartingHour": "12",
+                  "MaintenanceWindowDuration": "60"
+                },
+                "AutoBackupSettings": {
+                  "Enable": false,
+                  "RetentionPeriod": "30",
+                  "EnableEncryption": false
+                }
+              },
+              "protectedSettingsConfig": {
+
+              }
+
+            },
+            {
+              "name": "sqlAOPrepare",
+              "publisher": "Microsoft.Powershell",
+              "type": "DSC",
+              "typeHandlerVersion": "2.19",
+              "autoUpgradeMinorVersion": false,
+              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
+              "settingsConfig": {
+                "modulesURL": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/virtual-machines/n-tier-windows/extensions/PrepareAlwaysOnSqlServer.ps1.zip",
+                "configurationFunction": "PrepareAlwaysOnSqlServer.ps1\\PrepareAlwaysOnSqlServer",
+                "properties": {
+                  "domainName": "contoso.local",
+                  "sqlAlwaysOnEndpointName": "ra-sp2016-sql-hadr",
+                  "adminCreds": {
+                    "userName": "testuser",
+                    "password": "privateSettingsRef:AdminPassword"
+                  },
+                  "sqlServiceCreds": {
+                    "userName": "sqlservicetestuser",
+                    "password": "privateSettingsRef:SqlServerServiceAccountPassword"
+                  },
+                  "NumberOfDisks": "2",
+                  "WorkloadType": "GENERAL"
+                }
+              },
+              "protectedSettingsConfig": {
+                "items": {
+                  "adminPassword": "AweS0me@PW",
+                  "sqlServerServiceAccountPassword": "AweS0me@SQLServicePW"
+                }
+              }
+
+            }
+          ]
+        },
+        {
+          "vms": [ "ra-sp2016-sql-vm2" ],
+          "extensions": [
+            {
+              "name": "SqlVmIaasExtension",
+              "type": "SqlIaaSAgent",
+              "publisher": "Microsoft.SqlServer.Management",
+              "typeHandlerVersion": "1.2",
+              "autoUpgradeMinorVersion": true,
+              "settingsConfigMapperUri": "https://raw.githubusercontent.com/mspnp/template-building-blocks/v1.0.0/templates/resources/Microsoft.Compute/virtualMachines/extensions/vm-extension-passthrough-settings-mapper.json",
+              "settingsConfig": {
+                "AutoTelemetrySettings": {
+                  "Region": "West US 2"
+                },
+                "AutoPatchingSettings": {
+                  "PatchCategory": "WindowsMandatoryUpdates",
+                  "Enable": true,
+                  "DayOfWeek": "Sunday",
+                  "MaintenanceWindowStartingHour": "14",
+                  "MaintenanceWindowDuration": "60"
+                },
+                "AutoBackupSettings": {
+                  "Enable": false,
+                  "RetentionPeriod": "30",
+                  "EnableEncryption": false
+                }
+              },
+              "protectedSettingsConfig": {
+
+              }
+
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+

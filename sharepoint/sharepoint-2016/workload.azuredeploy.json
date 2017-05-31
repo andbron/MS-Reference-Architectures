@@ -1,0 +1,214 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "templateRootUri": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/template-building-blocks/larry/sharepoint2016/",
+      "metadata": {
+        "description": "Root path for templates"
+      }
+    },
+    "parameterRootUri": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/larry/sharepoint/virtual-machines/sharepoint-2016/parameters/",
+      "metadata": {
+        "decription": "Root path for parameters"
+      }
+    }
+  },
+  "variables": {
+    "templates": {
+      "deployment": {
+        "loadBalancer": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/loadBalancer-backend-n-vm/azuredeploy.json')]",
+        "virtualMachine": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/multi-vm-n-nic-m-storage/azuredeploy.json')]",
+        "extensions": "[concat(parameters('templateRootUri'), 'templates/buildingBlocks/virtualMachine-extensions/azuredeploy.json')]"
+      },
+      "parameter": {
+        "app": "[concat(parameters('parameterRootUri'), 'app.parameters.json')]",
+        "web": "[concat(parameters('parameterRootUri'), 'web.parameters.json')]",
+        "dch": "[concat(parameters('parameterRootUri'), 'dch.parameters.json')]",
+        "srch": "[concat(parameters('parameterRootUri'), 'srch.parameters.json')]",
+        "createFarmAPP1Ext": "[concat(parameters('parameterRootUri'), 'spt-create-farm-app1-ext.parameters.json')]",
+        "configFarmDCH1Ext": "[concat(parameters('parameterRootUri'), 'spt-config-farm-dch1-ext.parameters.json')]",
+        "configFarmWFE1SRCH1Ext": "[concat(parameters('parameterRootUri'), 'spt-config-farm-wfe1-srch1-ext.parameters.json')]",
+        "configFarmWfe2App2Ext": "[concat(parameters('parameterRootUri'), 'spt-config-farm-wfe2-app2-ext.parameters.json')]",
+        "configFarmDch2Srch2Ext": "[concat(parameters('parameterRootUri'), 'spt-config-farm-dch2-srch2-ext.parameters.json')]",
+        "addArecord": "[concat(parameters('parameterRootUri'), 'add-dns-arecord.parameters.json')]"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-app-deployment",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.virtualMachine]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.app]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-web-deployment",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.loadBalancer]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.web]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-dch-deployment",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.virtualMachine]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.dch]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-srch-deployment",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.virtualMachine]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.srch]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-create-farm-App1-ext",
+      "dependsOn": [
+        "ra-sp2016-web-deployment",
+        "ra-sp2016-dch-deployment",
+        "ra-sp2016-srch-deployment",
+        "ra-sp2016-app-deployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.extensions]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.createFarmAPP1Ext]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-config-farm-Dch1-ext",
+      "dependsOn": [
+        "ra-sp2016-create-farm-App1-ext"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.extensions]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.configFarmDCH1Ext]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+	   {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-config-farm-Wfe1-Srch1-ext",
+      "dependsOn": [
+        "ra-sp2016-config-farm-Dch1-ext"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.extensions]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.configFarmWFE1SRCH1Ext]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-config-farm-Wfe2-App2-ext",
+      "dependsOn": [
+        "ra-sp2016-config-farm-Wfe1-Srch1-ext"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.extensions]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.configFarmWfe2App2Ext]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+	   {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-config-farm-Dch2-Srch2-ext",
+      "dependsOn": [
+        "ra-sp2016-config-farm-Wfe2-App2-ext"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.extensions]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.configFarmDch2Srch2Ext]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "ra-sp2016-add-dns-arecord-ext",
+      "dependsOn": [
+        "ra-sp2016-config-farm-Wfe1-Srch1-ext"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templates').deployment.extensions]"
+        },
+        "parametersLink": {
+          "uri": "[variables('templates').parameter.addArecord]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    }
+  ]
+}
