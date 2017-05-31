@@ -11,7 +11,7 @@
     },
     "parameterRootUri": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/master/hybrid-networking/vpn/parameters/",
+      "defaultValue": "https://raw.githubusercontent.com/mspnp/reference-architectures/larry/sap/sap/sap-hana/azuredeploy.json",
       "metadata": {
         "decription": "Root path for parameters"
       }
