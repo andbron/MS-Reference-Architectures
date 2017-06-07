@@ -63,10 +63,7 @@
             "privateIPAllocationMethod": "Dynamic",
             "enableIPForwarding": false,
             "domainNameLabelPrefix": "",
-            "dnsServers": [
-              "10.0.4.4",
-              "10.0.4.5"
-            ]          
+            "dnsServers": [ ]          
           }
         ],
         "imageReference": {
@@ -108,7 +105,7 @@
         ],
         "availabilitySet": {
           "useExistingAvailabilitySet": "No",
-          "name": "sql-as"
+          "name": "ra-sp2016-sql-as"
         }
       }
     },

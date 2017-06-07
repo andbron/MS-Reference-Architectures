@@ -83,10 +83,10 @@ if ($Mode -eq "Infrastructure")
         -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName -TemplateUri $virtualNetworkTemplate.AbsoluteUri `
         -TemplateParameterFile $virtualNetworkParametersFile
 
-    Write-Host "Creating VPN Gateway..."
-    New-AzureRmResourceGroupDeployment -Name "ra-sp2016-vpn-deployment" `
-        -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName -TemplateUri $virtualNetworkTemplate.AbsoluteUri `
-        -TemplateParameterFile $virtualNetworkParametersFile
+ #   Write-Host "Creating VPN Gateway..."
+ #   New-AzureRmResourceGroupDeployment -Name "ra-sp2016-vpn-deployment" `
+ #       -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName -TemplateUri $virtualNetworkTemplate.AbsoluteUri `
+ #       -TemplateParameterFile $virtualNetworkParametersFile
 
     Write-Host "Deploying jumpbox..."
     New-AzureRmResourceGroupDeployment -Name "ra-sp2016-mgmt-deployment" -ResourceGroupName $infrastructureResourceGroup.ResourceGroupName `

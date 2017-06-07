@@ -11,16 +11,6 @@
     "networkSecurityGroupsSettings": {
       "value": [
         {
-          "name": "ra-sp2016-ad-nsg",
-          "subnets": [
-            "ad"
-          ],
-          "networkInterfaces": [
-          ],
-          "securityRules": [
-          ]
-        },
-        {
           "name": "ra-sp2016-sql-nsg",
           "subnets": [
             "sql"
@@ -112,45 +102,6 @@
           ]
         },
         {
-          "name": "ra-sp2016-svca-nsg",
-          "subnets": [
-            "web"
-          ],
-          "networkInterfaces": [
-          ],
-          "securityRules": [
-          ]
-        },
-        {
-          "name": "ra-sp2016-svcb-nsg",
-          "subnets": [
-            "cache"
-          ],
-          "networkInterfaces": [
-          ],
-          "securityRules": [
-          ]
-        },
-        {
-          "name": "ra-sp2016-svcc-nsg",
-          "subnets": [
-            "app"
-          ],
-          "networkInterfaces": [
-          ],
-          "securityRules": [
-          ]
-        },
-        {
-          "name": "ra-sp2016-svcd-nsg",
-          "subnets": [
-            "search"
-          ],
-          "networkInterfaces": [
-          ],
-          "securityRules": [
-          ]
-        },        {
           "name": "ra-sp2016-mgmt-nsg",
           "subnets": [ ],
           "networkInterfaces": [

@@ -44,7 +44,7 @@
                 "extensions": [],
                 "availabilitySet": {
                     "useExistingAvailabilitySet": "No",
-                    "name": "app-as"
+                    "name": "ra-sp2016-app-as"
                 }
             }
         },
@@ -56,7 +56,7 @@
         },
         "buildingBlockSettings": {
             "value": {
-                "storageAccountsCount": 1,
+                "storageAccountsCount": 2,
                 "vmCount": 2,
                 "vmStartIndex": 1
             }

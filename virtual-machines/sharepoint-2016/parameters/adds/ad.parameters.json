@@ -44,7 +44,7 @@
         "extensions": [],
         "availabilitySet": {
           "useExistingAvailabilitySet": "No",
-          "name": "ad-as"
+          "name": "a-sp2016-ad-as"
         }
       }
     },
